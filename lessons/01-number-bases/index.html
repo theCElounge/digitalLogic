@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number-Base Conversions · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Convert between decimal, binary, and hexadecimal — starting with an interactive bit explorer, then a full practice worksheet.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="number_bases.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Lesson 001 / 101</span><span class="sr-only">Lesson 1 of 5</span></p>
+        <h1>Number-Base <span class="accent">Conversions</span></h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Convert between decimal, binary, and hexadecimal — starting with an interactive bit explorer, then a full practice worksheet.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section" id="interactive-lab">
+<h2>Interactive Lab</h2>
+<p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">Explore how bits and hexadecimals map to decimal numbers before you begin the worksheet.</p>
+<div class="simulators-grid">
+<div aria-label="Interactive Binary to Decimal Explorer" class="simulator" role="region">
+<h3 aria-hidden="true">8-Bit Explorer</h3>
+<div class="sim-container">
+<div aria-label="Binary Bits" class="bit-row" role="group">
+<button aria-pressed="false" class="bit-btn" id="bit-7" onclick="toggleBit(7)" type="button">0<br/><span>128</span></button>
+<button aria-pressed="false" class="bit-btn" id="bit-6" onclick="toggleBit(6)" type="button">0<br/><span>64</span></button>
+<button aria-pressed="false" class="bit-btn" id="bit-5" onclick="toggleBit(5)" type="button">0<br/><span>32</span></button>
+<button aria-pressed="false" class="bit-btn" id="bit-4" onclick="toggleBit(4)" type="button">0<br/><span>16</span></button>
+<button aria-pressed="false" class="bit-btn" id="bit-3" onclick="toggleBit(3)" type="button">0<br/><span>8</span></button>
+<button aria-pressed="false" class="bit-btn" id="bit-2" onclick="toggleBit(2)" type="button">0<br/><span>4</span></button>
+<button aria-pressed="false" class="bit-btn" id="bit-1" onclick="toggleBit(1)" type="button">0<br/><span>2</span></button>
+<button aria-pressed="false" class="bit-btn" id="bit-0" onclick="toggleBit(0)" type="button">0<br/><span>1</span></button>
+</div>
+<div aria-hidden="true" class="sim-equation" id="bin-powers" style="margin-bottom: 0.5rem; font-size: 0.95rem;">
+                                    0×2⁷ + 0×2⁶ + 0×2⁵ + 0×2⁴ + 0×2³ + 0×2² + 0×2¹ + 0×2⁰
+                                </div>
+<div aria-hidden="true" class="sim-equation" id="bin-equation">
+                                    0 + 0 + 0 + 0 + 0 + 0 + 0 + 0 = <br/>
+<span class="sim-result">0</span>
+</div>
+<div aria-live="polite" class="sr-only" id="bin-announcer">Decimal value is 0</div>
+</div>
+</div>
+<div aria-label="Interactive Hexadecimal Inspector" class="simulator" role="region">
+<h3 aria-hidden="true">Hexadecimal Inspector</h3>
+<div class="sim-container">
+<div style="display: flex; gap: 1.5rem; align-items: center;">
+<button onclick="changeHex(-1)" style="padding: 0.5rem 1rem; font-size: 1.5rem; font-weight:bold; background: var(--code-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;" type="button">-</button>
+<div aria-live="polite" id="hex-display" style="font-size: 3.5rem; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary-color); width: 70px; text-align: center;">0</div>
+<button onclick="changeHex(1)" style="padding: 0.5rem 1rem; font-size: 1.5rem; font-weight:bold; background: var(--code-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;" type="button">+</button>
+</div>
+<div class="sim-equation">
+                                    Binary: <span class="sim-result" id="hex-bin-out" style="background: #fff; border: 2px solid #cbd5e1; color: var(--text-main); font-size: 1.25rem;">0000</span><br/><br/>
+                                    Decimal: <span class="sim-result" id="hex-dec-out" style="font-size: 1.25rem;">0</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+ SECTION 1: Decimal to Binary 
+<section class="section" id="sec-int-bin">
+<h2>Convert Decimal to Binary</h2>
+<p class="section-intro">Use the repeated division method (Integer ÷ 2) to find the remainders.</p>
+<!-- Example 1 -->
+<div class="card example-card">
+<div style="display: flex; align-items: center; margin-bottom: 1rem;">
+<span class="badge">Example</span>
+<span style="font-weight: 600; font-size: 1.1rem;">(41)₁₀ = (101001)₂</span>
+</div>
+<p style="margin-bottom: 1rem; color: var(--text-muted);">Use the repeated division method (Integer ÷ 2) to find the remainders.</p>
+<div style="overflow-x: auto; margin-bottom: 1rem;">
+<table class="calc-table">
+<thead>
+<tr>
+<th>Operation</th>
+<th>Quotient</th>
+<th>Remainder</th>
+<th>Coefficient</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>41 ÷ 2</td>
+<td>20</td>
+<td>1</td>
+<td>a₀ = 1</td>
+</tr>
+<tr>
+<td>20 ÷ 2</td>
+<td>10</td>
+<td>0</td>
+<td>a₁ = 0</td>
+</tr>
+<tr>
+<td>10 ÷ 2</td>
+<td>5</td>
+<td>0</td>
+<td>a₂ = 0</td>
+</tr>
+<tr>
+<td>5 ÷ 2</td>
+<td>2</td>
+<td>1</td>
+<td>a₃ = 1</td>
+</tr>
+<tr>
+<td>2 ÷ 2</td>
+<td>1</td>
+<td>0</td>
+<td>a₄ = 0</td>
+</tr>
+<tr>
+<td>1 ÷ 2</td>
+<td>0</td>
+<td>1</td>
+<td style="color: var(--primary-color); font-weight: bold;">a₅ = 1 (MSB)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="formula-box" style="margin-top: 0; padding-top: 0.5rem; border-top: 1px dashed var(--border-color);">
+<p>Read remainders from bottom to top: <strong>101001</strong></p>
+</div>
+</div>
+<!-- Problems 2-6 -->
+<div class="problem-grid">
+<div class="card" id="dec2bin-153">
+<h3>2. (153)<sub>10</sub></h3>
+<button class="show-steps-btn" onclick="showDec2BinSteps(153, 'dec2bin-153')">Show Steps</button>
+<button class="hide-steps-btn" onclick="hideDec2BinSteps('dec2bin-153')" style="display:none;">Hide Steps</button>
+<form class="steps-form" style="margin-top:1rem; display:none;"></form>
+<button class="check-steps-btn" onclick="checkDec2BinSteps(event, 153, 'dec2bin-153')" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback" style="margin-top:0.5rem;"></div>
+</div>
+<div class="card" id="dec2bin-315">
+<h3>3. (315)<sub>10</sub></h3>
+<button class="show-steps-btn" onclick="showDec2BinSteps(315, 'dec2bin-315')">Show Steps</button>
+<button class="hide-steps-btn" onclick="hideDec2BinSteps('dec2bin-315')" style="display:none;">Hide Steps</button>
+<form class="steps-form" style="margin-top:1rem; display:none;"></form>
+<button class="check-steps-btn" onclick="checkDec2BinSteps(event, 315, 'dec2bin-315')" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback" style="margin-top:0.5rem;"></div>
+</div>
+<div class="card" id="dec2bin-234">
+<h3>4. (234)<sub>10</sub></h3>
+<button class="show-steps-btn" onclick="showDec2BinSteps(234, 'dec2bin-234')">Show Steps</button>
+<button class="hide-steps-btn" onclick="hideDec2BinSteps('dec2bin-234')" style="display:none;">Hide Steps</button>
+<form class="steps-form" style="margin-top:1rem; display:none;"></form>
+<button class="check-steps-btn" onclick="checkDec2BinSteps(event, 234, 'dec2bin-234')" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback" style="margin-top:0.5rem;"></div>
+</div>
+<div class="card" id="dec2bin-1347">
+<h3>5. (1347)<sub>10</sub></h3>
+<button class="show-steps-btn" onclick="showDec2BinSteps(1347, 'dec2bin-1347')">Show Steps</button>
+<button class="hide-steps-btn" onclick="hideDec2BinSteps('dec2bin-1347')" style="display:none;">Hide Steps</button>
+<form class="steps-form" style="margin-top:1rem; display:none;"></form>
+<button class="check-steps-btn" onclick="checkDec2BinSteps(event, 1347, 'dec2bin-1347')" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback" style="margin-top:0.5rem;"></div>
+</div>
+<div class="card" id="dec2bin-2201">
+<h3>6. (2201)<sub>10</sub></h3>
+<button class="show-steps-btn" onclick="showDec2BinSteps(2201, 'dec2bin-2201')">Show Steps</button>
+<button class="hide-steps-btn" onclick="hideDec2BinSteps('dec2bin-2201')" style="display:none;">Hide Steps</button>
+<form class="steps-form" style="margin-top:1rem; display:none;"></form>
+<button class="check-steps-btn" onclick="checkDec2BinSteps(event, 2201, 'dec2bin-2201')" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback" style="margin-top:0.5rem;"></div>
+</div>
+</div>
+<script>
+// Utility: Generate all division steps for decimal to binary
+function getDec2BinSteps(n) {
+    const steps = [];
+    let current = n;
+    while (current > 0) {
+        let quotient = Math.floor(current / 2);
+        let remainder = current % 2;
+        steps.push({dividend: current, quotient, remainder});
+        current = quotient;
+    }
+    return steps;
+}
+
+// Show steps UI for a given problem
+function showDec2BinSteps(n, cardId) {
+    const card = document.getElementById(cardId);
+    const form = card.querySelector('.steps-form');
+    const checkBtn = card.querySelector('.check-steps-btn');
+    const hideBtn = card.querySelector('.hide-steps-btn');
+    const showBtn = card.querySelector('.show-steps-btn');
+    const feedback = card.querySelector('.feedback');
+    form.innerHTML = '';
+    feedback.textContent = '';
+    const steps = getDec2BinSteps(n);
+    steps.forEach((step, idx) => {
+        form.innerHTML += `
+            <div class="calc-box" style="margin-bottom:0.5rem;">
+                <div class="input-group">
+                    <span>${step.dividend} / 2</span>
+                    <input type="number" step="1" class="quotient" data-step="${idx}" placeholder="Quotient">
+                </div>
+                <div class="input-group">
+                    <span>${step.dividend} % 2</span>
+                    <input type="number" step="1" class="remainder" data-step="${idx}" placeholder="Rem">
+                </div>
+            </div>
+        `;
+    });
+    form.style.display = 'block';
+    checkBtn.style.display = 'inline-block';
+    hideBtn.style.display = 'inline-block';
+    showBtn.style.display = 'none';
+}
+
+// Hide steps UI for a given problem
+function hideDec2BinSteps(cardId) {
+    const card = document.getElementById(cardId);
+    const form = card.querySelector('.steps-form');
+    const checkBtn = card.querySelector('.check-steps-btn');
+    const hideBtn = card.querySelector('.hide-steps-btn');
+    const showBtn = card.querySelector('.show-steps-btn');
+    const feedback = card.querySelector('.feedback');
+    form.style.display = 'none';
+    checkBtn.style.display = 'none';
+    hideBtn.style.display = 'none';
+    showBtn.style.display = 'inline-block';
+    feedback.textContent = '';
+}
+
+// Check answers for a given problem
+function checkDec2BinSteps(event, n, cardId) {
+    event.preventDefault();
+    const card = document.getElementById(cardId);
+    const form = card.querySelector('.steps-form');
+    const feedback = card.querySelector('.feedback');
+    const steps = getDec2BinSteps(n);
+    let correct = true;
+    let firstWrong = null;
+    steps.forEach((step, idx) => {
+        const qInput = form.querySelector(`.quotient[data-step='${idx}']`);
+        const rInput = form.querySelector(`.remainder[data-step='${idx}']`);
+        qInput.style.background = '';
+        rInput.style.background = '';
+        if (Number(qInput.value) !== step.quotient) {
+            qInput.style.background = '#fee2e2';
+            correct = false;
+            if (!firstWrong) firstWrong = idx+1;
+        }
+        if (Number(rInput.value) !== step.remainder) {
+            rInput.style.background = '#fee2e2';
+            correct = false;
+            if (!firstWrong) firstWrong = idx+1;
+        }
+    });
+    if (correct) {
+        feedback.textContent = '✅ All answers are correct!';
+        feedback.style.color = '#10b981';
+    } else {
+        feedback.textContent = `❌ Check your answers. Error in step ${firstWrong}.`;
+        feedback.style.color = '#ef4444';
+    }
+}
+</script>
+</section>
+ SECTION: Decimal Fraction to Binary 
+<section class="section" id="sec-fraction-bin">
+<h2>Fractional Binary Conversion</h2>
+<!-- Example 7 -->
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">7. (0.6875)₁₀ = (0.1011)₂</span>
+</div>
+<div class="calc-table">
+<table>
+<thead><tr><th>Integer Part</th><th>Fraction Part</th><th>Coefficient</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>0.6875 x 2 = 1.375</td><td>1</td></tr>
+<tr><td>0</td><td>0.375 x 2 = 0.750</td><td>0</td></tr>
+<tr><td>0</td><td>0.750 x 2 = 1.500</td><td>1</td></tr>
+<tr><td>0</td><td>0.500 x 2 = 1.000</td><td>1</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="problem-grid">
+<div class="card">
+<h3>8. (0.573)₁₀</h3>
+<div class="calc-box">
+<div class="input-group"><span>0.573 x 2</span><input placeholder="Result" type="text"/></div>
+</div>
+</div>
+<div class="card">
+<h3>9. (0.365)₁₀</h3>
+<div class="calc-box">
+<div class="input-group"><span>0.365 x 2</span><input placeholder="Result" type="text"/></div>
+</div>
+</div>
+<div class="card">
+<h3>10. (0.312)₁₀</h3>
+<div class="calc-box">
+<div class="input-group"><span>0.312 x 2</span><input placeholder="Result" type="text"/></div>
+</div>
+</div>
+</div>
+</section>
+ SECTION 2: Decimal to Hex 
+<section class="section" id="sec-int-hex">
+<h2>Convert Decimal to Hexadecimal</h2>
+<p class="section-intro">Divide by 16. Note remainders 10-15 correspond to A-F.</p>
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">12. (1234)₁₀ = (4D2)₁₆</span>
+</div>
+<div class="calc-table">
+<table>
+<thead><tr><th>Quotient</th><th>Remainder</th><th>Coefficient</th></tr></thead>
+<tbody>
+<tr><td>77</td><td>2</td><td>2</td></tr>
+<tr><td>4</td><td>13</td><td>D</td></tr>
+<tr><td>0</td><td>4</td><td>4</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="problem-grid">
+<div class="card" id="dec2hex-3314">
+<h3>13. (3314)<sub>10</sub></h3>
+<button class="show-steps-btn" onclick="showDec2HexSteps(3314, 'dec2hex-3314')">Show Steps</button>
+<button class="hide-steps-btn" onclick="hideDec2HexSteps('dec2hex-3314')" style="display:none;">Hide Steps</button>
+<form class="steps-form" style="margin-top:1rem; display:none;"></form>
+<button class="check-steps-btn" onclick="checkDec2HexSteps(event, 3314, 'dec2hex-3314')" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback" style="margin-top:0.5rem;"></div>
+</div>
+<div class="card" id="dec2hex-4417">
+<h3>14. (4417)<sub>10</sub></h3>
+<button class="show-steps-btn" onclick="showDec2HexSteps(4417, 'dec2hex-4417')">Show Steps</button>
+<button class="hide-steps-btn" onclick="hideDec2HexSteps('dec2hex-4417')" style="display:none;">Hide Steps</button>
+<form class="steps-form" style="margin-top:1rem; display:none;"></form>
+<button class="check-steps-btn" onclick="checkDec2HexSteps(event, 4417, 'dec2hex-4417')" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback" style="margin-top:0.5rem;"></div>
+</div>
+</div>
+</section>
+<script>
+// Utility: Generate all division steps for decimal to hexadecimal
+function getDec2HexSteps(n) {
+    const steps = [];
+    let current = n;
+    while (current > 0) {
+        let quotient = Math.floor(current / 16);
+        let remainder = current % 16;
+        steps.push({dividend: current, quotient, remainder});
+        current = quotient;
+    }
+    return steps;
+}
+
+function showDec2HexSteps(n, cardId) {
+    const card = document.getElementById(cardId);
+    const form = card.querySelector('.steps-form');
+    const checkBtn = card.querySelector('.check-steps-btn');
+    const hideBtn = card.querySelector('.hide-steps-btn');
+    const showBtn = card.querySelector('.show-steps-btn');
+    const feedback = card.querySelector('.feedback');
+    form.innerHTML = '';
+    feedback.textContent = '';
+    const steps = getDec2HexSteps(n);
+    steps.forEach((step, idx) => {
+        form.innerHTML += `
+            <div class="calc-box" style="margin-bottom:0.5rem;">
+                <div class="input-group">
+                    <span>${step.dividend} / 16</span>
+                    <input type="number" step="1" class="quotient" data-step="${idx}" placeholder="Quotient">
+                </div>
+                <div class="input-group">
+                    <span>${step.dividend} % 16</span>
+                    <input type="number" step="1" class="remainder" data-step="${idx}" placeholder="Rem">
+                </div>
+            </div>
+        `;
+    });
+    form.style.display = 'block';
+    checkBtn.style.display = 'inline-block';
+    hideBtn.style.display = 'inline-block';
+    showBtn.style.display = 'none';
+}
+
+function hideDec2HexSteps(cardId) {
+    const card = document.getElementById(cardId);
+    const form = card.querySelector('.steps-form');
+    const checkBtn = card.querySelector('.check-steps-btn');
+    const hideBtn = card.querySelector('.hide-steps-btn');
+    const showBtn = card.querySelector('.show-steps-btn');
+    const feedback = card.querySelector('.feedback');
+    form.style.display = 'none';
+    checkBtn.style.display = 'none';
+    hideBtn.style.display = 'none';
+    showBtn.style.display = 'inline-block';
+    feedback.textContent = '';
+}
+
+function checkDec2HexSteps(event, n, cardId) {
+    event.preventDefault();
+    const card = document.getElementById(cardId);
+    const form = card.querySelector('.steps-form');
+    const feedback = card.querySelector('.feedback');
+    const steps = getDec2HexSteps(n);
+    let correct = true;
+    let firstWrong = null;
+    steps.forEach((step, idx) => {
+        const qInput = form.querySelector(`.quotient[data-step='${idx}']`);
+        const rInput = form.querySelector(`.remainder[data-step='${idx}']`);
+        qInput.style.background = '';
+        rInput.style.background = '';
+        if (Number(qInput.value) !== step.quotient) {
+            qInput.style.background = '#fee2e2';
+            correct = false;
+            if (!firstWrong) firstWrong = idx+1;
+        }
+        if (Number(rInput.value) !== step.remainder) {
+            rInput.style.background = '#fee2e2';
+            correct = false;
+            if (!firstWrong) firstWrong = idx+1;
+        }
+    });
+    if (correct) {
+        feedback.textContent = '✅ All answers are correct!';
+        feedback.style.color = '#10b981';
+    } else {
+        feedback.textContent = `❌ Check your answers. Error in step ${firstWrong}.`;
+        feedback.style.color = '#ef4444';
+    }
+}
+</script>
+ SECTION 3: Binary to Decimal 
+<section class="section" id="sec-bin-int">
+<h2>Convert Binary to Decimal</h2>
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">15. (101001)₂ = (41)₁₀</span>
+</div>
+<div class="formula-box">
+<p>= 1×2⁵ + 0×2⁴ + 1×2³ + 0×2² + 0×2¹ + 1×2⁰</p>
+<p>= 32 + 0 + 8 + 0 + 0 + 1</p>
+<p>= <strong>41</strong></p>
+</div>
+</div>
+<div class="problem-grid">
+<div class="card">
+<h3>16. (101111)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+<div class="card">
+<h3>17. (1101011)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+<div class="card">
+<h3>18. (10100)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+<div class="card">
+<h3>19. (10110111)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+</div>
+</section>
+ SECTION: Binary Fraction to Decimal 
+<section class="section" id="sec-bin-fraction">
+<h2>Binary Fraction to Decimal</h2>
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">20. (0.1101)₂ = (0.8125)₁₀</span>
+</div>
+<div class="formula-box">
+<p>= 1×2⁻¹ + 1×2⁻² + 0×2⁻³ + 1×2⁻⁴</p>
+<p>= 0.5 + 0.25 + 0 + 0.0625</p>
+<p>= <strong>0.8125</strong></p>
+</div>
+</div>
+<div class="problem-grid">
+<div class="card">
+<h3>21. (0.0111)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+<div class="card">
+<h3>22. (0.1010)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+<div class="card">
+<h3>23. (0.110011)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+<div class="card">
+<h3>24. (0.1100)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+</div>
+</section>
+ SECTION 4: Binary to Hex 
+<section class="section" id="sec-bin-hex">
+<h2>Convert Binary to Hexadecimal</h2>
+<p class="section-intro">Group 4 bits starting from the right (for integers) or left (for fractions).</p>
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">25. (101001)₂ = (29)₁₆</span>
+</div>
+<div class="visual-map">
+<div class="bits">0010 1001</div>
+<div class="arrow">⬇ Group 4</div>
+<div class="hex">2 9</div>
+</div>
+</div>
+<div class="problem-grid">
+<div class="card">
+<h3>26. (101111)₂</h3>
+<div class="calc-box">
+<div class="input-group"><span>Group</span><input placeholder="0010" type="text"/></div>
+</div>
+</div>
+<div class="card">
+<h3>27. (1101011)₂</h3>
+<div class="calc-box">
+<div class="input-group"><span>Group</span><input placeholder="0110" type="text"/></div>
+</div>
+</div>
+<div class="card">
+<h3>28. (10100)₂</h3>
+<div class="calc-box">
+<div class="input-group"><span>Group</span><input placeholder="0101" type="text"/></div>
+</div>
+</div>
+<div class="card">
+<h3>29. (10110111)₂</h3>
+<div class="calc-box">
+<div class="input-group"><span>Group</span><input placeholder="1011" type="text"/></div>
+</div>
+</div>
+</div>
+</section>
+ SECTION: Fraction Binary to Hex 
+<section class="section" id="sec-bin-hex-fraction">
+<h2>Binary Fraction to Hexadecimal</h2>
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">30. (0.110111)₂ = (0.DE)₁₆</span>
+</div>
+<div class="visual-map">
+<div class="bits">1101 1100</div>
+<div class="arrow">⬇ Pad with 0</div>
+<div class="hex">D E</div>
+</div>
+</div>
+<div class="problem-grid">
+<div class="card">
+<h3>31. (0.0111)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+<div class="card">
+<h3>32. (0.1010)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+<div class="card">
+<h3>33. (0.110011)₂</h3>
+<textarea placeholder="Show work here..."></textarea>
+</div>
+</div>
+</section>
+ SECTION 5: Hex to Binary 
+<section class="section" id="sec-hex-bin">
+<h2>Convert Hexadecimal to Binary</h2>
+<p class="section-intro">Replace each hex digit with its 4-bit binary equivalent.</p>
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">35. (7AD)₁₆ = (011110101101)₂</span>
+</div>
+<div class="hex-grid">
+<div class="hex-item">7</div>
+<div class="hex-item">A</div>
+<div class="hex-item">D</div>
+</div>
+<div class="arrow-down"></div>
+<div class="binary-line">0111 1010 1101</div>
+</div>
+<div class="problem-grid">
+<div class="card">
+<h3>36. (417)₁₆</h3>
+<div class="calc-box">
+<div class="input-group"><span>417</span><input placeholder="Binary" type="text"/></div>
+</div>
+</div>
+<div class="card">
+<h3>37. (23E)₁₆</h3>
+<div class="calc-box">
+<div class="input-group"><span>23E</span><input placeholder="Binary" type="text"/></div>
+</div>
+</div>
+</div>
+</section>
+ SECTION 6: Hex to Decimal 
+<section class="section" id="sec-hex-int">
+<h2>Convert Hex to Decimal</h2>
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">38. (AD)₁₆ = (173)₁₀</span>
+</div>
+<div class="formula-box">
+<p>Step 1: Convert to Binary first (Optional)</p>
+<p class="calc-sub">A D → 1010 1101</p>
+<p class="calc-sub">1×2⁷ + 0×2⁶ + 1×2⁵ + 0×2⁴ + 1×2³ + 1×2² + 0×2¹ + 1×2⁰</p>
+<p class="calc-sub">= 128 + 0 + 32 + 0 + 8 + 4 + 0 + 1</p>
+<p>= <strong>173</strong></p>
+</div>
+</div>
+<div class="problem-grid">
+<div class="card">
+<h3>39. (417)₈</h3>
+<div class="calc-box">
+<div class="input-group"><span>417₈</span><input placeholder="Hex to Bin" type="text"/></div>
+</div>
+<div class="calc-box">
+<div class="input-group"><span>Result</span><input placeholder="Decimal" type="text"/></div>
+</div>
+</div>
+</div>
+</section>
+
+<nav class="pager" aria-label="Lesson navigation"><a class="pager-next" href="../02-binary-arithmetic/index.html"><span class="pager-label">Next lesson</span><span class="pager-title">Binary Addition &amp; Subtraction</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

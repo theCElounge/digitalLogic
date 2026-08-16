@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verilog Tutorials · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Six hands-on tutorials taking you from a blank Vivado project to finite state machines on the Basys 3 FPGA.">
+    <link rel="icon" type="image/png" href="../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/site.css">
+    <script src="../assets/js/site.js" defer></script>
+    <script src="../assets/js/verilog-lessons.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../index.html">
+                <img class="brand-mark" src="../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../index.html">All lessons</a></li>
+                    <li><a href="../verilog/index.html" aria-current="page">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">The CE Lounge · 110 tutorials</span><span class="sr-only">The CE Lounge · 6 tutorials</span></p>
+        <h1>Verilog <span class="accent">Tutorials</span></h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">From a blank Vivado project to state machines on real hardware. Each tutorial pairs with a lab and ends with a self-check quiz — work through them in order.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+            <h2 class="sr-only">Tutorials</h2>
+            <ul class="lesson-list">
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">001</span><span class="sr-only">1</span></p>
+                    <h3><a href="01-vivado-basys3/index.html">Getting Started: Vivado &amp; the Basys 3</a></h3>
+                    <p class="lesson-desc">Create your first Vivado project, assign pins with a constraints file, and light up real LEDs on the Basys 3 board — the complete flow, start to finish.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start tutorial →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">010</span><span class="sr-only">2</span></p>
+                    <h3><a href="02-modules-and-dataflow/index.html">Modules, Wires &amp; Dataflow Modeling</a></h3>
+                    <p class="lesson-desc">The anatomy of a Verilog module: ports, wires, operators, vectors, and building bigger circuits from smaller ones — culminating in a 4-bit adder.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start tutorial →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">011</span><span class="sr-only">3</span></p>
+                    <h3><a href="03-behavioral-modeling/index.html">Behavioral Modeling: always, if &amp; case</a></h3>
+                    <p class="lesson-desc">Describe what a circuit does instead of which gates it uses — multiplexers, decoders, and the seven-segment display, plus the accidental-latch trap every beginner hits.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start tutorial →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">100</span><span class="sr-only">4</span></p>
+                    <h3><a href="04-testbenches/index.html">Simulation &amp; Testbenches</a></h3>
+                    <p class="lesson-desc">Verify your circuit in software before it ever touches the board: write a testbench, run the Vivado simulator, and read waveforms like a pro.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start tutorial →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">101</span><span class="sr-only">5</span></p>
+                    <h3><a href="05-sequential-logic/index.html">Sequential Verilog: Clocks, Registers &amp; Counters</a></h3>
+                    <p class="lesson-desc">Circuits with memory: flip-flops in Verilog, the blocking vs. non-blocking rule, resets, and taming the Basys 3&#39;s 100 MHz clock so humans can watch a counter count.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start tutorial →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">110</span><span class="sr-only">6</span></p>
+                    <h3><a href="06-state-machines/index.html">Finite State Machines in Verilog</a></h3>
+                    <p class="lesson-desc">Turn a state diagram into working hardware with the three-block FSM pattern — built around a complete "1011" sequence detector, the blueprint for Lab 10 and your project.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start tutorial →</p>
+                </article>
+            </li>
+            </ul>
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

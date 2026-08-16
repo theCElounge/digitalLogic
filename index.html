@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Interactive lessons for The CE Lounge. Number bases, binary arithmetic, logic gates, truth tables, and Boolean algebra.">
+    <link rel="icon" type="image/png" href="assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <script src="assets/js/site.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="index.html">
+                <img class="brand-mark" src="assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="index.html" aria-current="page">All lessons</a></li>
+                    <li><a href="verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">The CE Lounge · 111 lessons</span><span class="sr-only">The CE Lounge · 7 lessons</span></p>
+        <h1>Digital Logic and <span class="accent">Computer Organization</span></h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Interactive lessons that turn handouts into hands-on practice. Toggle bits, build truth tables, and check your answers as you go — on any device.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+            <h2 class="sr-only">Lessons</h2>
+            <ul class="lesson-list">
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">001</span><span class="sr-only">1</span></p>
+                    <h3><a href="lessons/01-number-bases/index.html">Number-Base Conversions</a></h3>
+                    <p class="lesson-desc">Convert between decimal, binary, and hexadecimal — starting with an interactive bit explorer, then a full practice worksheet.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start lesson →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">010</span><span class="sr-only">2</span></p>
+                    <h3><a href="lessons/02-binary-arithmetic/index.html">Binary Addition &amp; Subtraction</a></h3>
+                    <p class="lesson-desc">Practice unsigned and signed binary arithmetic, including 1's and 2's complements, with step-by-step interactive checking.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start lesson →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">011</span><span class="sr-only">3</span></p>
+                    <h3><a href="lessons/03-logic-gates/index.html">Logic Gates</a></h3>
+                    <p class="lesson-desc">Learn the AND, OR, and NOT gates — their symbols, truth tables, and behavior — then test each one in a live simulator.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start lesson →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">100</span><span class="sr-only">4</span></p>
+                    <h3><a href="lessons/04-truth-tables/index.html">Truth Tables</a></h3>
+                    <p class="lesson-desc">Build and verify truth tables for compound Boolean expressions, with instant feedback on every row.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start lesson →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">101</span><span class="sr-only">5</span></p>
+                    <h3><a href="lessons/05-boolean-algebra/index.html">Boolean Algebra</a></h3>
+                    <p class="lesson-desc">Simplify Boolean functions, express them in minterms and maxterms, and apply De Morgan's theorem — with a step-by-step equation evaluator.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start lesson →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">110</span><span class="sr-only">6</span></p>
+                    <h3><a href="lessons/06-karnaugh-maps/index.html">Karnaugh Maps</a></h3>
+                    <p class="lesson-desc">Minimize Boolean functions visually with 2-, 3-, and 4-variable K-maps — group prime implicants, handle don't-cares, and check your groupings interactively.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start lesson →</p>
+                </article>
+            </li>
+            <li>
+                <article class="lesson-card">
+                    <p class="lesson-num"><span aria-hidden="true">111</span><span class="sr-only">7</span></p>
+                    <h3><a href="lessons/07-sop-pos-nand-nor/index.html">SOP, POS &amp; NAND/NOR Implementation</a></h3>
+                    <p class="lesson-desc">Express minimized functions in sum-of-products and product-of-sums form, then convert them to NAND-only and NOR-only circuits with guided bubble-pushing practice.</p>
+                    <p class="lesson-cta" aria-hidden="true">Start lesson →</p>
+                </article>
+            </li>
+            </ul>
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

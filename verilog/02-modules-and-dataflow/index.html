@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modules, Wires & Dataflow Modeling · Verilog Tutorials · Digital Logic and Computer Organization</title>
+    <meta name="description" content="The anatomy of a Verilog module: ports, wires, operators, vectors, and building bigger circuits from smaller ones — culminating in a 4-bit adder.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="../../assets/js/verilog-lessons.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Verilog 010 / 110</span><span class="sr-only">Verilog tutorial 2 of 6</span></p>
+        <h1>Modules, Wires &amp; <span class="accent">Dataflow</span> Modeling</h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">The anatomy of a Verilog module: ports, wires, operators, vectors, and building bigger circuits from smaller ones — culminating in a 4-bit adder.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section">
+    <h2>Anatomy of a module</h2>
+    <p>A <strong>module</strong> is Verilog's unit of hardware — a box with input and output ports. Everything you build in this course is a module or a combination of modules.</p>
+    <div class="code-block"><span class="code-caption">Module skeleton</span><pre><code class="language-verilog">module my_circuit(
+    input  wire a,       // 1-bit input
+    input  wire b,
+    output wire y        // 1-bit output
+);
+    // circuit description goes here
+    assign y = a &amp; b;    // y is ALWAYS a AND b
+endmodule</code></pre></div>
+    <div class="instructions"><ul>
+        <li><code>wire</code> is a physical connection — it has no memory, it just carries a value.</li>
+        <li><code>assign</code> creates <em>continuous assignment</em>: the right side is constantly evaluated, like real gates. It is <strong>not</strong> a one-time assignment like in C or Python.</li>
+        <li>Statements describe hardware existing <em>in parallel</em>, not steps executing in order. Two <code>assign</code> lines are two circuits operating at the same time.</li>
+    </ul></div>
+</section>
+
+<section class="section">
+    <h2>Operators = gates</h2>
+    <p>Dataflow modeling describes logic with operators. Each operator synthesizes to the gate you studied in the Logic Gates lesson:</p>
+    <div class="table-responsive"><table class="calc-table">
+        <thead><tr><th>Gate</th><th>Boolean</th><th>Verilog</th><th>Example</th></tr></thead>
+        <tbody>
+            <tr><td>AND</td><td>a·b</td><td>&amp;</td><td><code>assign y = a &amp; b;</code></td></tr>
+            <tr><td>OR</td><td>a+b</td><td>|</td><td><code>assign y = a | b;</code></td></tr>
+            <tr><td>NOT</td><td>a′</td><td>~</td><td><code>assign y = ~a;</code></td></tr>
+            <tr><td>XOR</td><td>a⊕b</td><td>^</td><td><code>assign y = a ^ b;</code></td></tr>
+            <tr><td>NAND</td><td>(a·b)′</td><td>~(&amp;)</td><td><code>assign y = ~(a &amp; b);</code></td></tr>
+            <tr><td>NOR</td><td>(a+b)′</td><td>~(|)</td><td><code>assign y = ~(a | b);</code></td></tr>
+        </tbody>
+    </table></div>
+    <p>Any SOP expression from a K-map translates directly. The minimized majority voter <code>F = ab + bc + ac</code> becomes:</p>
+    <div class="code-block"><span class="code-caption">Majority voter — straight from the K-map</span><pre><code class="language-verilog">module majority(
+    input  wire a, b, c,
+    output wire f
+);
+    assign f = (a &amp; b) | (b &amp; c) | (a &amp; c);
+endmodule</code></pre></div>
+</section>
+
+<section class="section">
+    <h2>Vectors: buses of bits</h2>
+    <p>Square brackets declare multi-bit signals. <code>[3:0]</code> is a 4-bit bus, bit 3 is the most significant.</p>
+    <div class="code-block"><span class="code-caption">Vector essentials</span><pre><code class="language-verilog">wire [3:0] a;              // 4-bit bus: a[3] a[2] a[1] a[0]
+wire [7:0] big;
+
+assign big = {a, 4&#x27;b0000}; // concatenation: a shifted into the top half
+assign y   = a[2];         // bit select
+assign lo  = a[1:0];       // part select (2 bits)
+
+// Sized literals:  &lt;width&gt;&#x27;&lt;base&gt;&lt;value&gt;
+// 4&#x27;b1010  = 4-bit binary 1010     (decimal 10)
+// 8&#x27;hF3    = 8-bit hex F3
+// 4&#x27;d9     = 4-bit decimal 9</code></pre></div>
+</section>
+
+<section class="section">
+    <h2>Hierarchy: modules inside modules</h2>
+    <p>Real designs are built by <em>instantiating</em> tested sub-modules — exactly how you built a full adder from two half adders on paper. Always connect ports <strong>by name</strong> (<code>.port(signal)</code>); positional connection invites silent bugs.</p>
+    <div class="code-block"><span class="code-caption">full_adder.v — structural design from half adders</span><pre><code class="language-verilog">module half_adder(
+    input  wire a, b,
+    output wire s, c
+);
+    assign s = a ^ b;
+    assign c = a &amp; b;
+endmodule
+
+module full_adder(
+    input  wire a, b, cin,
+    output wire s, cout
+);
+    wire s1, c1, c2;
+
+    half_adder ha0 (.a(a),  .b(b),   .s(s1), .c(c1));
+    half_adder ha1 (.a(s1), .b(cin), .s(s),  .c(c2));
+
+    assign cout = c1 | c2;
+endmodule</code></pre></div>
+    <p>Chain four of them and you have the Lab 5 ripple-carry adder:</p>
+    <div class="code-block"><span class="code-caption">adder4.v — 4-bit ripple-carry adder</span><pre><code class="language-verilog">module adder4(
+    input  wire [3:0] a, b,
+    input  wire       cin,
+    output wire [3:0] sum,
+    output wire       cout
+);
+    wire c1, c2, c3;
+
+    full_adder fa0 (.a(a[0]), .b(b[0]), .cin(cin), .s(sum[0]), .cout(c1));
+    full_adder fa1 (.a(a[1]), .b(b[1]), .cin(c1),  .s(sum[1]), .cout(c2));
+    full_adder fa2 (.a(a[2]), .b(b[2]), .cin(c2),  .s(sum[2]), .cout(c3));
+    full_adder fa3 (.a(a[3]), .b(b[3]), .cin(c3),  .s(sum[3]), .cout(cout));
+endmodule</code></pre></div>
+    <div class="instructions"><ul><li><strong>Shortcut for later:</strong> once you understand the structure, Verilog lets you write the whole thing as <code>assign {cout, sum} = a + b + cin;</code> — the synthesizer builds the adder for you. In Lab 5 you build it from full adders first, on purpose.</li></ul></div>
+</section>
+
+<section class="section">
+    <h2>Check yourself</h2>
+    <fieldset class="quiz"><legend>Self-check</legend><div class="quiz-item"><label for="self-check-q1">Write the Verilog operator for XOR (one character).</label><input type="text" id="self-check-q1" data-answer="^" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q2">Write one line of dataflow Verilog for a NAND gate output y with inputs a and b (end with a semicolon).</label><input type="text" id="self-check-q2" data-answer="assign y = ~(a &amp; b);|assign y = ~(a&amp;b);|assign y=~(a&amp;b);|assign y = ~(b &amp; a);" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q3">What is the decimal value of the sized literal 4&#39;b1010?</label><input type="text" id="self-check-q3" data-answer="10" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q4">In a [7:0] vector, which index is the most significant bit?</label><input type="text" id="self-check-q4" data-answer="7|bit 7|[7]" autocomplete="off" autocapitalize="off" spellcheck="false"></div><button type="button" class="check-steps-btn">Check answers</button><button type="button" class="hide-steps-btn">Reset</button><span class="feedback"></span></fieldset>
+</section>
+
+<nav class="pager" aria-label="Tutorial navigation"><a class="pager-prev" href="../01-vivado-basys3/index.html"><span class="pager-label">Previous tutorial</span><span class="pager-title">Getting Started: Vivado &amp; the Basys 3</span></a><a class="pager-next" href="../03-behavioral-modeling/index.html"><span class="pager-label">Next tutorial</span><span class="pager-title">Behavioral Modeling: always, if &amp; case</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

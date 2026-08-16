@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOP/POS Minimization &amp; NAND/NOR-Only Circuits · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Minimize SOP by grouping 1s and POS by grouping 0s on a K-map, then convert either minimized form into a two-level NAND-only or NOR-only circuit.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="sop-pos-nand-nor.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Lesson 0111 / 1101</span><span class="sr-only">Lesson 7 of 13</span></p>
+        <h1>SOP/POS Minimization &amp; <span class="accent">NAND/NOR-Only</span> Circuits</h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Minimize by grouping either the 1s or the 0s on a K-map, then realize the result with nothing but NAND gates &mdash; or nothing but NOR gates.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section" id="interactive-lab">
+<h2>Interactive Lab</h2>
+<p class="section-intro">Click cells to toggle 0/1. Watch the canonical SOP (built from the 1s) and the canonical POS (built from the 0s) update side by side &mdash; the same function, two equally valid starting points.</p>
+<div aria-label="3-variable SOP and POS explorer" class="simulator" role="region">
+<h3 aria-hidden="true">3-Variable SOP &harr; POS Explorer</h3>
+<div class="kmap-explorer">
+<div class="kmap-wrap">
+<table class="kmap" id="sop-pos-table">
+<thead></thead>
+<tbody></tbody>
+</table>
+</div>
+<div class="kmap-explorer-controls">
+<button class="btn-ghost" id="sop-pos-clear" type="button">Clear map</button>
+</div>
+<div aria-hidden="true" class="sim-equation" id="sop-sum">F = 0</div>
+<div aria-hidden="true" class="sim-equation" id="sop-expr">0</div>
+<hr class="trace-rule" aria-hidden="true">
+<div aria-hidden="true" class="sim-equation" id="pos-sum">F = 1</div>
+<div aria-hidden="true" class="sim-equation" id="pos-expr">1</div>
+<div aria-live="polite" class="sr-only" id="sop-pos-announcer">0 minterms and 0 maxterms selected.</div>
+</div>
+</div>
+</section>
+
+<section class="section" id="sop-pos-forms">
+<h2>SOP and POS: Two Canonical Forms</h2>
+<p>Every truth table can be read two ways. Read the <strong>1-rows</strong>: each one is a <strong>minterm</strong>, a product (AND) of every literal that&rsquo;s true for that row. OR all the minterms together and you get the <strong>sum-of-products</strong> (SOP) form &mdash; the canonical form used throughout the K-map lesson.</p>
+<p>Read the <strong>0-rows</strong> instead: each one is a <strong>maxterm</strong>, a sum (OR) of literals &mdash; but with the polarity flipped, so a variable that&rsquo;s <em>1</em> in that row appears <em>complemented</em>, and a variable that&rsquo;s <em>0</em> appears plain. AND all the maxterms together and you get the <strong>product-of-sums</strong> (POS) form.</p>
+<div class="instructions">
+<p><strong>Key idea:</strong> SOP and POS describe the exact same function from opposite directions. SOP says &ldquo;output is 1 when any of these conditions hold.&rdquo; POS says &ldquo;output is 1 unless one of these conditions fails.&rdquo; Both are always available &mdash; which one minimizes smaller depends on the function.</p>
+</div>
+</section>
+
+<section class="section" id="minimizing-sop">
+<h2>Minimizing SOP with K-Maps</h2>
+<p class="section-intro">Group the <strong>1s</strong> using the <a href="../06-karnaugh-maps/index.html#grouping-rules">grouping rules from the previous lesson</a>: powers of 2, as large as possible, every 1 covered, minimum number of groups. Each group becomes one product term; OR the terms together.</p>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">1. F(A,B,C) = &Sigma;(0, 1, 2, 3, 5, 7)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">A \ BC</th><th>00</th><th>01</th><th>11</th><th>10</th></tr></thead>
+<tbody>
+<tr><th>0</th>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m0</span></td>
+<td class="cell-1 grp-a grp-b">1<span class="kmap-mnum">m1</span></td>
+<td class="cell-1 grp-a grp-b">1<span class="kmap-mnum">m3</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m2</span></td>
+</tr>
+<tr><th>1</th>
+<td class="cell-0">0<span class="kmap-mnum">m4</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m5</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m7</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m6</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>Top row: A = 0 constant &rarr; A&prime;</li>
+<li><span class="swatch grp-b"></span>Middle two columns: C = 1 constant &rarr; C</li>
+</ul>
+<p class="kmap-result">Minimal SOP: F = A&prime; + C</p>
+</div>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">2. F(A,B,C,D) = &Sigma;(0, 4, 8, 12, 13, 14, 15)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">AB \ CD</th><th>00</th><th>01</th><th>11</th><th>10</th></tr></thead>
+<tbody>
+<tr><th>00</th>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m0</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m1</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m3</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m2</span></td>
+</tr>
+<tr><th>01</th>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m4</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m5</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m7</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m6</span></td>
+</tr>
+<tr><th>11</th>
+<td class="cell-1 grp-a grp-b">1<span class="kmap-mnum">m12</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m13</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m15</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m14</span></td>
+</tr>
+<tr><th>10</th>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m8</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m9</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m11</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m10</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>CD = 00 column, all rows (wraps top-to-bottom): C&prime;D&prime;</li>
+<li><span class="swatch grp-b"></span>AB = 11 row: AB</li>
+</ul>
+<p class="kmap-result">Minimal SOP: F = C&prime;D&prime; + AB</p>
+</div>
+</section>
+
+<section class="section" id="minimizing-pos">
+<h2>Minimizing POS with K-Maps</h2>
+<p class="section-intro">Same map, same rules &mdash; but this time group the <strong>0s</strong>. Each group of 0s becomes one sum term, with the polarity of every constant literal flipped from the SOP convention (constant 1 &rarr; complemented, constant 0 &rarr; plain). AND the sum terms together.</p>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">3. F(A,B,C) = &Sigma;(0, 1, 2, 3, 5, 7) &mdash; same function as Example 1</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">A \ BC</th><th>00</th><th>01</th><th>11</th><th>10</th></tr></thead>
+<tbody>
+<tr><th>0</th>
+<td class="cell-1">1<span class="kmap-mnum">m0</span></td>
+<td class="cell-1">1<span class="kmap-mnum">m1</span></td>
+<td class="cell-1">1<span class="kmap-mnum">m3</span></td>
+<td class="cell-1">1<span class="kmap-mnum">m2</span></td>
+</tr>
+<tr><th>1</th>
+<td class="cell-0 grp-a">0<span class="kmap-mnum">m4</span></td>
+<td class="cell-1">1<span class="kmap-mnum">m5</span></td>
+<td class="cell-1">1<span class="kmap-mnum">m7</span></td>
+<td class="cell-0 grp-a">0<span class="kmap-mnum">m6</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>m4 and m6, the two outer columns of row A = 1 (wraps left-right): A = 1 &rarr; A&prime;, C = 0 &rarr; C, B varies and drops</li>
+</ul>
+<p class="kmap-result">Minimal POS: F = (A&prime; + C)</p>
+<p>Here the minimal POS collapses to the same single term as the minimal SOP &mdash; a reminder that SOP and POS aren&rsquo;t two different answers, just two different routes to whatever the smallest expression happens to be.</p>
+</div>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">4. F(A,B,C) = &Sigma;(1, 3, 4, 6, 7)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">A \ BC</th><th>00</th><th>01</th><th>11</th><th>10</th></tr></thead>
+<tbody>
+<tr><th>0</th>
+<td class="cell-0 grp-a">0<span class="kmap-mnum">m0</span></td>
+<td class="cell-1">1<span class="kmap-mnum">m1</span></td>
+<td class="cell-1">1<span class="kmap-mnum">m3</span></td>
+<td class="cell-0 grp-a">0<span class="kmap-mnum">m2</span></td>
+</tr>
+<tr><th>1</th>
+<td class="cell-1">1<span class="kmap-mnum">m4</span></td>
+<td class="cell-0 grp-b">0<span class="kmap-mnum">m5</span></td>
+<td class="cell-1">1<span class="kmap-mnum">m7</span></td>
+<td class="cell-1">1<span class="kmap-mnum">m6</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>m0 and m2, row A = 0 (columns 00 and 10): A = 0 &rarr; A, C = 0 &rarr; C &rarr; (A + C)</li>
+<li><span class="swatch grp-b"></span>m5 alone, no adjacent 0 to pair with: A = 1 &rarr; A&prime;, B = 0 &rarr; B, C = 1 &rarr; C&prime; &rarr; (A&prime; + B + C&prime;)</li>
+</ul>
+<p class="kmap-result">Minimal POS: F = (A + C)(A&prime; + B + C&prime;)</p>
+<p>An isolated 0 with no legal neighbor still forms a valid group of size 1 &mdash; it just costs a full-width sum term instead of a short one. Always check both SOP and POS on a function like this; whichever needs fewer terms and literals is the cheaper circuit.</p>
+</div>
+</section>
+
+<section class="section" id="nand-only">
+<h2>NAND-Only Implementations</h2>
+<p>Every two-level AND-OR circuit converts directly into a two-level NAND-NAND circuit with the identical wiring &mdash; only the gates change. The proof is a double negation plus De Morgan&rsquo;s law:</p>
+<div class="formula-box">
+<p>P&#8321; + P&#8322; + &hellip; + P&#8345; = (P&#8321;&prime; &middot; P&#8322;&prime; &middot; &hellip; &middot; P&#8345;&prime;)&prime; = NAND(NAND(P&#8321;), NAND(P&#8322;), &hellip;, NAND(P&#8345;))</p>
+</div>
+<ol class="steps">
+<li><strong>Replace every first-level AND gate with a NAND gate.</strong> Each one still takes the same literals as inputs.</li>
+<li><strong>Replace the final OR gate with a NAND gate too.</strong> Its inputs are the outputs of the first-level NANDs.</li>
+<li><strong>Give any bare single-literal term its own inverter.</strong> In the AND-OR version a lone literal is just a wire with no gate on it; to fit the NAND pattern it needs an actual inversion, made by tying both inputs of a 2-input NAND together &mdash; NAND(X, X) = (X&middot;X)&prime; = X&prime;.</li>
+</ol>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">5. F = AB + CD, as NAND-NAND</span>
+</div>
+<div class="gate-figure-wrap">
+<svg class="gate-svg" viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two-level NAND-NAND circuit computing F equals A AND B, OR C AND D">
+<path class="gate-wire" d="M20,42 L80,42"></path>
+<path class="gate-wire" d="M20,68 L80,68"></path>
+<path class="gate-wire" d="M20,142 L80,142"></path>
+<path class="gate-wire" d="M20,168 L80,168"></path>
+<text class="gate-io-label ta-end" x="15" y="42">A</text>
+<text class="gate-io-label ta-end" x="15" y="68">B</text>
+<text class="gate-io-label ta-end" x="15" y="142">C</text>
+<text class="gate-io-label ta-end" x="15" y="168">D</text>
+<rect class="gate-rect" x="80" y="30" width="90" height="50" rx="4"></rect>
+<text class="gate-label ta-middle" x="125" y="55">NAND</text>
+<circle class="gate-bubble" cx="176" cy="55" r="6"></circle>
+<rect class="gate-rect" x="80" y="130" width="90" height="50" rx="4"></rect>
+<text class="gate-label ta-middle" x="125" y="155">NAND</text>
+<circle class="gate-bubble" cx="176" cy="155" r="6"></circle>
+<path class="gate-wire" d="M182,55 L250,55 L250,88 L300,88"></path>
+<path class="gate-wire" d="M182,155 L250,155 L250,122 L300,122"></path>
+<rect class="gate-rect" x="300" y="70" width="90" height="70" rx="4"></rect>
+<text class="gate-label ta-middle" x="345" y="105">NAND</text>
+<circle class="gate-bubble" cx="396" cy="105" r="6"></circle>
+<path class="gate-wire" d="M402,105 L450,105"></path>
+<text class="gate-out-label ta-start" x="455" y="109">F</text>
+</svg>
+</div>
+<p class="kmap-result">F = NAND( NAND(A, B), NAND(C, D) )</p>
+</div>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">6. F = A + BC, as NAND-only (needs an inverter)</span>
+</div>
+<div class="gate-figure-wrap">
+<svg class="gate-svg" viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two-level NAND-only circuit computing F equals A, OR B AND C, using an inverter for the bare literal A">
+<path class="gate-wire" d="M20,55 L55,55"></path>
+<circle class="gate-dot" cx="55" cy="55" r="3"></circle>
+<path class="gate-wire" d="M55,55 L55,42 L80,42"></path>
+<path class="gate-wire" d="M55,55 L55,68 L80,68"></path>
+<text class="gate-io-label ta-end" x="15" y="55">A</text>
+<path class="gate-wire" d="M20,142 L80,142"></path>
+<path class="gate-wire" d="M20,168 L80,168"></path>
+<text class="gate-io-label ta-end" x="15" y="142">B</text>
+<text class="gate-io-label ta-end" x="15" y="168">C</text>
+<rect class="gate-rect" x="80" y="30" width="90" height="50" rx="4"></rect>
+<text class="gate-label ta-middle" x="125" y="55">NAND</text>
+<circle class="gate-bubble" cx="176" cy="55" r="6"></circle>
+<rect class="gate-rect" x="80" y="130" width="90" height="50" rx="4"></rect>
+<text class="gate-label ta-middle" x="125" y="155">NAND</text>
+<circle class="gate-bubble" cx="176" cy="155" r="6"></circle>
+<path class="gate-wire" d="M182,55 L250,55 L250,88 L300,88"></path>
+<path class="gate-wire" d="M182,155 L250,155 L250,122 L300,122"></path>
+<rect class="gate-rect" x="300" y="70" width="90" height="70" rx="4"></rect>
+<text class="gate-label ta-middle" x="345" y="105">NAND</text>
+<circle class="gate-bubble" cx="396" cy="105" r="6"></circle>
+<path class="gate-wire" d="M402,105 L450,105"></path>
+<text class="gate-out-label ta-start" x="455" y="109">F</text>
+</svg>
+</div>
+<p>The top gate is a 2-input NAND with both inputs tied to A &mdash; an inverter, producing A&prime;. The bottom gate is an ordinary 2-input NAND on B and C, producing (BC)&prime;. The final NAND recombines them: F = NAND(A&prime;, (BC)&prime;) = (A&prime;)&prime; + ((BC)&prime;)&prime; = A + BC.</p>
+<p class="kmap-result">F = NAND( NAND(A, A), NAND(B, C) )</p>
+</div>
+</section>
+
+<section class="section" id="nor-only">
+<h2>NOR-Only Implementations</h2>
+<p>POS has the exact dual conversion. A two-level OR-AND circuit (sum terms feeding a final AND) becomes a two-level NOR-NOR circuit, gate for gate:</p>
+<div class="formula-box">
+<p>S&#8321; &middot; S&#8322; &middot; &hellip; &middot; S&#8345; = (S&#8321;&prime; + S&#8322;&prime; + &hellip; + S&#8345;&prime;)&prime; = NOR(NOR(S&#8321;), NOR(S&#8322;), &hellip;, NOR(S&#8345;))</p>
+</div>
+<ol class="steps">
+<li><strong>Replace every first-level OR gate with a NOR gate.</strong> Same literals in, complemented sum out.</li>
+<li><strong>Replace the final AND gate with a NOR gate too.</strong> Its inputs are the first-level NOR outputs.</li>
+<li><strong>Give any bare single-literal factor its own inverter</strong> &mdash; a 2-input NOR with both inputs tied together: NOR(X, X) = (X+X)&prime; = X&prime;.</li>
+</ol>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">7. F = (A + B)(C + D), as NOR-NOR</span>
+</div>
+<div class="gate-figure-wrap">
+<svg class="gate-svg" viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two-level NOR-NOR circuit computing F equals A OR B, AND C OR D">
+<path class="gate-wire" d="M20,42 L80,42"></path>
+<path class="gate-wire" d="M20,68 L80,68"></path>
+<path class="gate-wire" d="M20,142 L80,142"></path>
+<path class="gate-wire" d="M20,168 L80,168"></path>
+<text class="gate-io-label ta-end" x="15" y="42">A</text>
+<text class="gate-io-label ta-end" x="15" y="68">B</text>
+<text class="gate-io-label ta-end" x="15" y="142">C</text>
+<text class="gate-io-label ta-end" x="15" y="168">D</text>
+<rect class="gate-rect" x="80" y="30" width="90" height="50" rx="4"></rect>
+<text class="gate-label ta-middle" x="125" y="55">NOR</text>
+<circle class="gate-bubble" cx="176" cy="55" r="6"></circle>
+<rect class="gate-rect" x="80" y="130" width="90" height="50" rx="4"></rect>
+<text class="gate-label ta-middle" x="125" y="155">NOR</text>
+<circle class="gate-bubble" cx="176" cy="155" r="6"></circle>
+<path class="gate-wire" d="M182,55 L250,55 L250,88 L300,88"></path>
+<path class="gate-wire" d="M182,155 L250,155 L250,122 L300,122"></path>
+<rect class="gate-rect" x="300" y="70" width="90" height="70" rx="4"></rect>
+<text class="gate-label ta-middle" x="345" y="105">NOR</text>
+<circle class="gate-bubble" cx="396" cy="105" r="6"></circle>
+<path class="gate-wire" d="M402,105 L450,105"></path>
+<text class="gate-out-label ta-start" x="455" y="109">F</text>
+</svg>
+</div>
+<p class="kmap-result">F = NOR( NOR(A, B), NOR(C, D) )</p>
+</div>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">8. F = A(B + C), as NOR-only (needs an inverter)</span>
+</div>
+<div class="gate-figure-wrap">
+<svg class="gate-svg" viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two-level NOR-only circuit computing F equals A AND the quantity B OR C, using an inverter for the bare literal A">
+<path class="gate-wire" d="M20,55 L55,55"></path>
+<circle class="gate-dot" cx="55" cy="55" r="3"></circle>
+<path class="gate-wire" d="M55,55 L55,42 L80,42"></path>
+<path class="gate-wire" d="M55,55 L55,68 L80,68"></path>
+<text class="gate-io-label ta-end" x="15" y="55">A</text>
+<path class="gate-wire" d="M20,142 L80,142"></path>
+<path class="gate-wire" d="M20,168 L80,168"></path>
+<text class="gate-io-label ta-end" x="15" y="142">B</text>
+<text class="gate-io-label ta-end" x="15" y="168">C</text>
+<rect class="gate-rect" x="80" y="30" width="90" height="50" rx="4"></rect>
+<text class="gate-label ta-middle" x="125" y="55">NOR</text>
+<circle class="gate-bubble" cx="176" cy="55" r="6"></circle>
+<rect class="gate-rect" x="80" y="130" width="90" height="50" rx="4"></rect>
+<text class="gate-label ta-middle" x="125" y="155">NOR</text>
+<circle class="gate-bubble" cx="176" cy="155" r="6"></circle>
+<path class="gate-wire" d="M182,55 L250,55 L250,88 L300,88"></path>
+<path class="gate-wire" d="M182,155 L250,155 L250,122 L300,122"></path>
+<rect class="gate-rect" x="300" y="70" width="90" height="70" rx="4"></rect>
+<text class="gate-label ta-middle" x="345" y="105">NOR</text>
+<circle class="gate-bubble" cx="396" cy="105" r="6"></circle>
+<path class="gate-wire" d="M402,105 L450,105"></path>
+<text class="gate-out-label ta-start" x="455" y="109">F</text>
+</svg>
+</div>
+<p>The top gate is a 2-input NOR with both inputs tied to A, giving A&prime;. The bottom gate is an ordinary 2-input NOR on B and C, giving (B+C)&prime;. The final NOR recombines them: F = NOR(A&prime;, (B+C)&prime;) = (A&prime;)&prime; &middot; ((B+C)&prime;)&prime; = A(B+C).</p>
+<p class="kmap-result">F = NOR( NOR(A, A), NOR(B, C) )</p>
+</div>
+
+<div class="callout-warning">
+<p><strong>Common mistake:</strong> mixing NAND-NAND with NOR-NOR bubble math. The two conversions are duals of each other &mdash; don&rsquo;t try to build an SOP expression out of NOR gates (or a POS expression out of NAND gates) by simply swapping gate names; re-derive the levels from the appropriate identity instead.</p>
+</div>
+</section>
+
+<section class="section" id="self-check">
+<h2>Self-Check</h2>
+<div class="quiz">
+<span class="quiz-title">Quick check</span>
+<fieldset>
+<div class="quiz-item">
+<label for="q1">To minimize SOP on a K-map, do you group the 1s or the 0s?</label>
+<input data-answer="1s|ones|the 1s" id="q1" type="text">
+</div>
+<div class="quiz-item">
+<label for="q2">To minimize POS on a K-map, do you group the 1s or the 0s?</label>
+<input data-answer="0s|zeros|zeroes|the 0s" id="q2" type="text">
+</div>
+<div class="quiz-item">
+<label for="q3">A two-level AND-OR circuit becomes NAND-NAND just by swapping every gate for a NAND and keeping the same wiring. True or false?</label>
+<input data-answer="true|t" id="q3" type="text">
+</div>
+<div class="quiz-item">
+<label for="q4">A bare single-literal term needs its own inverter when converting to NAND-only, because the AND-OR version has no gate there to replace. True or false?</label>
+<input data-answer="true|t" id="q4" type="text">
+</div>
+<div class="quiz-item">
+<label for="q5">What do you get by tying both inputs of a 2-input NOR gate together?</label>
+<input data-answer="inverter|an inverter|not gate|a not gate|not|the complement" id="q5" type="text">
+</div>
+</fieldset>
+<button class="check-steps-btn" type="button">Check Answers</button>
+<button class="hide-steps-btn" type="button">Reset</button>
+<div class="feedback"></div>
+</div>
+</section>
+
+<nav class="pager" aria-label="Lesson navigation">
+<a class="pager-prev" href="../06-karnaugh-maps/index.html"><span class="pager-label">Previous lesson</span><span class="pager-title">Karnaugh Maps</span></a>
+</nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 1 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

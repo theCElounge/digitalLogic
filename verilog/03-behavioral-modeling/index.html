@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Behavioral Modeling: always, if & case · Verilog Tutorials · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Describe what a circuit does instead of which gates it uses — multiplexers, decoders, and the seven-segment display, plus the accidental-latch trap every beginner hits.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="../../assets/js/verilog-lessons.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Verilog 011 / 110</span><span class="sr-only">Verilog tutorial 3 of 6</span></p>
+        <h1><span class="accent">Behavioral</span> Modeling: always, if &amp; case</h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Describe what a circuit does instead of which gates it uses — multiplexers, decoders, and the seven-segment display, plus the accidental-latch trap every beginner hits.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section">
+    <h2>From structure to behavior</h2>
+    <p>Dataflow modeling is fine for small equations, but describing a 7-segment decoder with sixteen <code>assign</code> terms is miserable. <strong>Behavioral modeling</strong> lets you write the truth table almost directly, and the synthesizer picks the gates.</p>
+    <div class="code-block"><span class="code-caption">The behavioral pattern</span><pre><code class="language-verilog">reg y;                    // targets of always blocks are declared reg
+always @(*) begin         // @(*): re-evaluate when ANY input changes
+    // if / case statements describing the behavior
+end</code></pre></div>
+    <div class="instructions"><ul>
+        <li><code>always @(*)</code> defines a block of behavior for <strong>combinational</strong> logic. The <code>*</code> auto-builds the sensitivity list — always use it; hand-written lists cause simulation/hardware mismatches.</li>
+        <li>A signal assigned inside an <code>always</code> block must be declared <code>reg</code>. Despite the name, <strong><code>reg</code> does not mean a register is created</strong> — it's just a Verilog rule about where assignments may appear.</li>
+    </ul></div>
+</section>
+
+<section class="section">
+    <h2>Multiplexer, three ways</h2>
+    <div class="code-block"><span class="code-caption">mux4.v — a 4-to-1 multiplexer</span><pre><code class="language-verilog">module mux4(
+    input  wire [3:0] d,      // four data inputs d[3..0]
+    input  wire [1:0] sel,    // select lines
+    output reg        y
+);
+    always @(*) begin
+        case (sel)
+            2&#x27;b00:   y = d[0];
+            2&#x27;b01:   y = d[1];
+            2&#x27;b10:   y = d[2];
+            2&#x27;b11:   y = d[3];
+            default: y = 1&#x27;b0;   // safety net
+        endcase
+    end
+endmodule
+
+// The same mux in one dataflow line (conditional operator):
+//   assign y = d[sel];
+//   assign y = sel[1] ? (sel[0] ? d[3] : d[2])
+//                     : (sel[0] ? d[1] : d[0]);</code></pre></div>
+</section>
+
+<section class="section">
+    <h2>The accidental latch — the #1 beginner bug</h2>
+    <p>In combinational <code>always</code> blocks, <strong>every output must be assigned on every possible path</strong>. If some input combination assigns nothing, the synthesizer must <em>remember</em> the old value — so it silently infers a latch. Your "combinational" circuit now has memory, and behaves unpredictably in hardware.</p>
+    <div class="code-block"><span class="code-caption">BROKEN — infers a latch</span><pre><code class="language-verilog">always @(*) begin
+    if (en)
+        y = a &amp; b;
+    // no else!  When en == 0, y keeps its old value -&gt; LATCH
+end</code></pre></div>
+    <div class="code-block"><span class="code-caption">FIXED — every path assigns y</span><pre><code class="language-verilog">always @(*) begin
+    if (en)
+        y = a &amp; b;
+    else
+        y = 1&#x27;b0;
+end
+
+// Equally good: a default value up front
+always @(*) begin
+    y = 1&#x27;b0;          // default first
+    if (en) y = a &amp; b; // override when needed
+end</code></pre></div>
+    <div class="callout-warning"><strong>Spot it in the tools:</strong> Vivado's synthesis log warns <code>inferring latch for variable 'y'</code>. In this course, that warning in a combinational design is always a bug. The fixes: add <code>else</code>, add <code>default:</code> to every <code>case</code>, or assign defaults at the top of the block.</div>
+</section>
+
+<section class="section">
+    <h2>Worked example: hex to seven-segment decoder</h2>
+    <p>The Basys 3's four-digit display is <em>active-low</em>: a segment lights when its signal is <code>0</code>. The pattern <code>{g,f,e,d,c,b,a}</code> below drives one digit; <code>an</code> enables digits (also active-low).</p>
+    <div class="code-block"><span class="code-caption">sseg_decoder.v — used in Lab 7 and the project</span><pre><code class="language-verilog">module sseg_decoder(
+    input  wire [3:0] hex,     // value 0-F
+    output reg  [6:0] seg      // {g,f,e,d,c,b,a}, ACTIVE LOW
+);
+    always @(*) begin
+        case (hex)
+            4&#x27;h0: seg = 7&#x27;b1000000;
+            4&#x27;h1: seg = 7&#x27;b1111001;
+            4&#x27;h2: seg = 7&#x27;b0100100;
+            4&#x27;h3: seg = 7&#x27;b0110000;
+            4&#x27;h4: seg = 7&#x27;b0011001;
+            4&#x27;h5: seg = 7&#x27;b0010010;
+            4&#x27;h6: seg = 7&#x27;b0000010;
+            4&#x27;h7: seg = 7&#x27;b1111000;
+            4&#x27;h8: seg = 7&#x27;b0000000;
+            4&#x27;h9: seg = 7&#x27;b0010000;
+            4&#x27;hA: seg = 7&#x27;b0001000;
+            4&#x27;hB: seg = 7&#x27;b0000011;
+            4&#x27;hC: seg = 7&#x27;b1000110;
+            4&#x27;hD: seg = 7&#x27;b0100001;
+            4&#x27;hE: seg = 7&#x27;b0000110;
+            4&#x27;hF: seg = 7&#x27;b0001110;
+            default: seg = 7&#x27;b1111111;   // all off
+        endcase
+    end
+endmodule</code></pre></div>
+    <p>Notice the shape: this <em>is</em> a truth table — sixteen rows, one output pattern per row. That's the power of behavioral modeling.</p>
+</section>
+
+<section class="section">
+    <h2>Check yourself</h2>
+    <fieldset class="quiz"><legend>Self-check</legend><div class="quiz-item"><label for="self-check-q1">What sensitivity list should every combinational always block use? (symbols inside the parentheses)</label><input type="text" id="self-check-q1" data-answer="*|@(*)|(*)" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q2">An if without an else in a combinational always block infers what unwanted element?</label><input type="text" id="self-check-q2" data-answer="latch|a latch" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q3">Signals assigned inside an always block must be declared with which keyword?</label><input type="text" id="self-check-q3" data-answer="reg" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q4">On the Basys 3 seven-segment display, a segment lights when its signal is 0 or 1?</label><input type="text" id="self-check-q4" data-answer="0|zero|low" autocomplete="off" autocapitalize="off" spellcheck="false"></div><button type="button" class="check-steps-btn">Check answers</button><button type="button" class="hide-steps-btn">Reset</button><span class="feedback"></span></fieldset>
+</section>
+
+<nav class="pager" aria-label="Tutorial navigation"><a class="pager-prev" href="../02-modules-and-dataflow/index.html"><span class="pager-label">Previous tutorial</span><span class="pager-title">Modules, Wires &amp; Dataflow Modeling</span></a><a class="pager-next" href="../04-testbenches/index.html"><span class="pager-label">Next tutorial</span><span class="pager-title">Simulation &amp; Testbenches</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequential Verilog: Clocks, Registers & Counters · Verilog Tutorials · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Circuits with memory: flip-flops in Verilog, the blocking vs. non-blocking rule, resets, and taming the Basys 3&#39;s 100 MHz clock so humans can watch a counter count.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="../../assets/js/verilog-lessons.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Verilog 101 / 110</span><span class="sr-only">Verilog tutorial 5 of 6</span></p>
+        <h1>Sequential Verilog: <span class="accent">Clocks</span>, Registers &amp; Counters</h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Circuits with memory: flip-flops in Verilog, the blocking vs. non-blocking rule, resets, and taming the Basys 3&#39;s 100 MHz clock so humans can watch a counter count.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section">
+    <h2>The edge-triggered always block</h2>
+    <p>One change of sensitivity list turns Verilog combinational logic into a flip-flop: react to a <em>clock edge</em> instead of to input changes.</p>
+    <div class="code-block"><span class="code-caption">dff.v — D flip-flop with asynchronous reset</span><pre><code class="language-verilog">module dff(
+    input  wire clk, rst, d,
+    output reg  q
+);
+    always @(posedge clk or posedge rst) begin
+        if (rst)
+            q &lt;= 1&#x27;b0;    // reset wins, immediately
+        else
+            q &lt;= d;       // otherwise capture d at the clock edge
+    end
+endmodule</code></pre></div>
+    <div class="instructions"><ul>
+        <li><code>always @(posedge clk)</code> = "do this at each rising clock edge." Now <code>reg q</code> really does become a hardware register.</li>
+        <li>Including <code>or posedge rst</code> makes the reset <strong>asynchronous</strong> (acts instantly). Omit it and check <code>rst</code> inside for a <strong>synchronous</strong> reset (acts at the next edge). Either is fine in this course — be consistent.</li>
+        <li>Note the new operator: <code>&lt;=</code>. That's next.</li>
+    </ul></div>
+</section>
+
+<section class="section">
+    <h2>Blocking vs. non-blocking — the rule that saves your semester</h2>
+    <p>Verilog has two assignment operators, and mixing them up is the classic sequential-logic bug:</p>
+    <div class="table-responsive"><table class="calc-table">
+        <thead><tr><th>Operator</th><th>Name</th><th>Behavior</th><th>Use in</th></tr></thead>
+        <tbody>
+            <tr><td><code>=</code></td><td>Blocking</td><td>Executes immediately, in order — like software</td><td>Combinational <code>always @(*)</code></td></tr>
+            <tr><td><code>&lt;=</code></td><td>Non-blocking</td><td>All right-hand sides read first, all updates land together at the edge — like real flip-flops</td><td>Clocked <code>always @(posedge clk)</code></td></tr>
+        </tbody>
+    </table></div>
+    <div class="code-block"><span class="code-caption">Why it matters: a 2-stage shift register</span><pre><code class="language-verilog">// CORRECT (non-blocking): q1 and q2 update simultaneously.
+// q2 gets the OLD q1 -&gt; a true 2-flip-flop shift register.
+always @(posedge clk) begin
+    q1 &lt;= d;
+    q2 &lt;= q1;
+end
+
+// WRONG (blocking): q1 updates first, THEN q2 reads the NEW q1.
+// Both lines collapse into ONE flip-flop: q2 == q1 == d.
+always @(posedge clk) begin
+    q1 = d;
+    q2 = q1;
+end</code></pre></div>
+    <div class="callout-warning"><strong>Memorize the rule:</strong> <code>&lt;=</code> in clocked blocks, <code>=</code> in combinational blocks, never mix them in one block, and never assign the same signal from two different always blocks.</div>
+</section>
+
+<section class="section">
+    <h2>Slowing down 100 MHz</h2>
+    <p>The Basys 3 clock ticks 100&nbsp;million times per second — a counter on LEDs would be an invisible blur. The standard trick: run a wide free-running counter and use its top bit, which toggles a human-speed square wave.</p>
+    <div class="code-block"><span class="code-caption">clk_div.v — from 100 MHz to ~0.75 Hz</span><pre><code class="language-verilog">module clk_div(
+    input  wire clk,          // 100 MHz board clock (pin W5)
+    input  wire rst,
+    output wire slow          // count[26] toggles ~0.75 times/sec
+);
+    reg [26:0] count;
+    always @(posedge clk or posedge rst) begin
+        if (rst) count &lt;= 27&#x27;d0;
+        else     count &lt;= count + 1;
+    end
+    assign slow = count[26];  // 100 MHz / 2^27  ≈ 0.75 Hz
+endmodule</code></pre></div>
+    <div class="instructions"><ul><li><strong>Good practice:</strong> use <code>slow</code> as a 1-bit <em>enable</em> for logic still clocked by <code>clk</code>, rather than as a new clock, once designs grow. For this course's LED-speed labs, either works — we discuss why in week 13.</li></ul></div>
+</section>
+
+<section class="section">
+    <h2>Putting it together: a visible counter</h2>
+    <div class="code-block"><span class="code-caption">top.v — Lab 9 core: 4-bit counter on LEDs</span><pre><code class="language-verilog">module top(
+    input  wire       clk,     // 100 MHz
+    input  wire       btnC,    // center button = reset
+    output wire [3:0] led
+);
+    wire slow;
+    clk_div div0 (.clk(clk), .rst(btnC), .slow(slow));
+
+    reg [3:0] count;
+    always @(posedge slow or posedge btnC) begin
+        if (btnC) count &lt;= 4&#x27;d0;
+        else      count &lt;= count + 1;
+    end
+
+    assign led = count;
+endmodule</code></pre></div>
+    <p>Uncomment <code>clk</code> (pin W5), <code>btnC</code> (U18), and the four <code>led</code> pins in the XDC. Program it and watch binary counting at last — this is the moment the whole foundations unit becomes physical.</p>
+    <div class="callout-warning"><strong>Buttons bounce.</strong> A mechanical press produces dozens of electrical edges over a few milliseconds. Use buttons for resets (harmless), but to <em>count presses</em> you need the debouncer from Lab 8 — otherwise one press adds a random number.</div>
+</section>
+
+<section class="section">
+    <h2>Check yourself</h2>
+    <fieldset class="quiz"><legend>Self-check</legend><div class="quiz-item"><label for="self-check-q1">Which assignment operator belongs in a clocked always block? (two characters)</label><input type="text" id="self-check-q1" data-answer="&lt;=" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q2">always @(posedge clk) makes the block respond to which clock edge?</label><input type="text" id="self-check-q2" data-answer="rising|rising edge|positive|positive edge|posedge" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q3">What frequency is the Basys 3 onboard clock? (number + unit)</label><input type="text" id="self-check-q3" data-answer="100 mhz|100mhz" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q4">In the wrong shift-register example, how many flip-flops does the blocking version create?</label><input type="text" id="self-check-q4" data-answer="1|one" autocomplete="off" autocapitalize="off" spellcheck="false"></div><button type="button" class="check-steps-btn">Check answers</button><button type="button" class="hide-steps-btn">Reset</button><span class="feedback"></span></fieldset>
+</section>
+
+<nav class="pager" aria-label="Tutorial navigation"><a class="pager-prev" href="../04-testbenches/index.html"><span class="pager-label">Previous tutorial</span><span class="pager-title">Simulation &amp; Testbenches</span></a><a class="pager-next" href="../06-state-machines/index.html"><span class="pager-label">Next tutorial</span><span class="pager-title">Finite State Machines in Verilog</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

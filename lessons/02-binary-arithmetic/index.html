@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Addition & Subtraction · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Practice unsigned and signed binary arithmetic, including 1's and 2's complements, with step-by-step interactive checking.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="addsub.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Lesson 010 / 101</span><span class="sr-only">Lesson 2 of 5</span></p>
+        <h1>Binary Addition &amp; <span class="accent">Subtraction</span></h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Practice unsigned and signed binary arithmetic, including 1's and 2's complements, with step-by-step interactive checking.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+ Binary Addition (Unsigned Numbers) 
+<section class="section" id="sec-binary-addition">
+<h2>Binary Addition (Unsigned Numbers)</h2>
+<div class="instructions" style="margin-bottom:1.5rem; background:#f1f5f9; border-radius:6px; padding:1rem 1.5rem; color:#334155;">
+<strong>Instructions:</strong><br/>
+<ul style="margin:0.5em 0 0 1.2em;">
+<li>Click <b>Show Steps</b> to reveal the interactive addition table for each problem.</li>
+<li>Enter the <b>carry-in</b> (C0, C1, ...) and <b>sum</b> (S0, S1, ...) for each bit position. Carry-in for the rightmost bit is always 0.</li>
+<li>Bits are shown from left (most significant) to right (least significant).</li>
+<li>Click <b>Check Answers</b> to get instant feedback. Correct answers are highlighted in green, mistakes in red.</li>
+<li>Click <b>Hide Steps</b> to collapse the table and clear your work for that problem.</li>
+<li>You can work on one problem at a time for best clarity.</li>
+</ul>
+</div>
+<div class="card">
+<table class="calc-table">
+<thead><tr><th>Number-1</th><th>Number-2</th><th>Carry</th><th>Sum</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+<!-- Interactive Problems -->
+<div class="problem-grid">
+<div class="card" id="add-1">
+<h3>1. 1001 + 1010</h3>
+<button onclick="showAddSteps('1001','1010','add-1')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkAddSteps(event,'1001','1010','add-1')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="add-2">
+<h3>2. 100111 + 101010</h3>
+<button onclick="showAddSteps('100111','101010','add-2')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkAddSteps(event,'100111','101010','add-2')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="add-3">
+<h3>3. 1100011 + 101101</h3>
+<button onclick="showAddSteps('1100011','101101','add-3')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkAddSteps(event,'1100011','101101','add-3')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="add-4">
+<h3>4. 1100110 + 1111001</h3>
+<button onclick="showAddSteps('1100110','1111001','add-4')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkAddSteps(event,'1100110','1111001','add-4')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+</div>
+</section>
+ 1's Complement 
+<section class="section" id="sec-ones-complement">
+<h2>1's Complement</h2>
+<div class="problem-grid">
+<div class="card" id="ones-5">
+<h3>5. 1's complement of 11001</h3>
+<button onclick="showOnesCompSteps('11001','ones-5')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkOnesCompSteps(event,'11001','ones-5')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="ones-6">
+<h3>6. 1's complement of 00111100</h3>
+<button onclick="showOnesCompSteps('00111100','ones-6')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkOnesCompSteps(event,'00111100','ones-6')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="ones-7">
+<h3>7. 1's complement of 10101111</h3>
+<button onclick="showOnesCompSteps('10101111','ones-7')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkOnesCompSteps(event,'10101111','ones-7')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="ones-8">
+<h3>8. 1's complement of 00011101</h3>
+<button onclick="showOnesCompSteps('00011101','ones-8')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkOnesCompSteps(event,'00011101','ones-8')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+</div>
+</section>
+ 2's Complement 
+<section class="section" id="sec-twos-complement">
+<h2>2's Complement</h2>
+<div class="problem-grid">
+<div class="card" id="twos-9">
+<h3>9. 2's complement of 011001</h3>
+<button onclick="showTwosCompSteps('011001','twos-9')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkTwosCompSteps(event,'011001','twos-9')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="twos-10">
+<h3>10. 2's complement of 00111100</h3>
+<button onclick="showTwosCompSteps('00111100','twos-10')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkTwosCompSteps(event,'00111100','twos-10')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="twos-11">
+<h3>11. 2's complement of 10101111</h3>
+<button onclick="showTwosCompSteps('10101111','twos-11')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkTwosCompSteps(event,'10101111','twos-11')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="twos-12">
+<h3>12. 2's complement of 00011101</h3>
+<button onclick="showTwosCompSteps('00011101','twos-12')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkTwosCompSteps(event,'00011101','twos-12')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+</div>
+</section>
+ Binary Subtraction (Unsigned Numbers) 
+<section class="section" id="sec-binary-subtraction">
+<h2>Binary Subtraction (Unsigned Numbers)</h2>
+<div class="problem-grid">
+<div class="card" id="sub-13">
+<h3>13. 1111 - 01010</h3>
+<button onclick="showSubSteps('1111','01010','sub-13')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkSubSteps(event,'1111','01010','sub-13')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="sub-14">
+<h3>14. 1111 - 1001</h3>
+<button onclick="showSubSteps('1111','1001','sub-14')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkSubSteps(event,'1111','1001','sub-14')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="sub-15">
+<h3>15. 1101 - 0010</h3>
+<button onclick="showSubSteps('1101','0010','sub-15')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkSubSteps(event,'1101','0010','sub-15')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="sub-16">
+<h3>16. 1101 - 1100</h3>
+<button onclick="showSubSteps('1101','1100','sub-16')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkSubSteps(event,'1101','1100','sub-16')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+<div class="card" id="sub-17">
+<h3>17. 101010 - 001100</h3>
+<button onclick="showSubSteps('101010','001100','sub-17')">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkSubSteps(event,'101010','001100','sub-17')" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+</div>
+</section>
+ Binary Addition (Signed Numbers) 
+<section class="section" id="sec-binary-addition-signed">
+<h2>Binary Addition (Signed Numbers)</h2>
+<div class="problem-grid">
+<div class="card" id="add-signed-18">
+<h3>18. 1001 + 0010</h3>
+<button onclick="showAddSteps('1001','0010','add-signed-18',true)">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkAddSteps(event,'1001','0010','add-signed-18',true)" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+</div>
+</section>
+ Binary Subtraction (Signed Numbers) 
+<section class="section" id="sec-binary-subtraction-signed">
+<h2>Binary Subtraction (Signed Numbers)</h2>
+<div class="problem-grid">
+<div class="card" id="sub-signed-19">
+<h3>19. 1111 - 1010</h3>
+<button onclick="showSubSteps('1111','1010','sub-signed-19',true)">Show Steps</button>
+<form class="steps-form" style="display:none;"></form>
+<button class="check-steps-btn" onclick="checkSubSteps(event,'1111','1010','sub-signed-19',true)" style="display:none;">Check Answers</button>
+<div class="feedback"></div>
+</div>
+</div>
+</section>
+
+<nav class="pager" aria-label="Lesson navigation"><a class="pager-prev" href="../01-number-bases/index.html"><span class="pager-label">Previous lesson</span><span class="pager-title">Number-Base Conversions</span></a><a class="pager-next" href="../03-logic-gates/index.html"><span class="pager-label">Next lesson</span><span class="pager-title">Logic Gates</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

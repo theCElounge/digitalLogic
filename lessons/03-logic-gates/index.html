@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic Gates · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Learn the AND, OR, and NOT gates — their symbols, truth tables, and behavior — then test each one in a live simulator.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="logic_gates.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Lesson 011 / 101</span><span class="sr-only">Lesson 3 of 5</span></p>
+        <h1>Logic <span class="accent">Gates</span></h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Learn the AND, OR, and NOT gates — their symbols, truth tables, and behavior — then test each one in a live simulator.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section">
+<h2>Overview</h2>
+<div class="instructions">
+<ul>
+<li>Review the definitions, symbols, and truth tables for each basic logic gate.</li>
+<li>Figures are provided for AND, OR, and NOT gates.</li>
+<li>Truth tables are interactive: fill in the outputs and check your answers.</li>
+</ul>
+</div>
+</section>
+<section class="section">
+<h2>AND Gate</h2>
+<div class="gate-flex">
+<div class="gate-info">
+<p><b>Operation:</b> Output = 1 when both inputs are 1.<br/>
+<b>Symbol:</b> <span class="mono">ab</span>, <span class="mono">a•b</span></p>
+</div>
+<div class="gate-figure">
+<img alt="AND gate symbol" src="and-gate.jpg"/>
+</div>
+</div>
+<div class="tt-wrap">
+<table class="tt-table">
+<thead>
+<tr><th>a</th><th>b</th><th>a·b</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>1</td></tr>
+</tbody>
+</table>
+</div>
+<div aria-label="AND Gate Interactive Simulator" class="simulator" role="region">
+<h3 aria-hidden="true">Interactive Simulator</h3>
+<div class="sim-container">
+<div aria-label="Inputs" class="sim-inputs" role="group">
+<button aria-pressed="false" class="sim-btn" id="and-in-a" onclick="toggleSimInput('and', 'a')" type="button">Input a: 0</button>
+<button aria-pressed="false" class="sim-btn" id="and-in-b" onclick="toggleSimInput('and', 'b')" type="button">Input b: 0</button>
+</div>
+<div aria-hidden="true" class="sim-flow-arrow">→</div>
+<div aria-hidden="true" class="sim-gate-box">AND</div>
+<div aria-hidden="true" class="sim-flow-arrow">→</div>
+<div aria-atomic="true" aria-live="polite" class="sim-output" id="and-out">Output: 0</div>
+</div>
+</div>
+</section>
+<section class="section">
+<h2>OR Gate</h2>
+<div class="gate-flex">
+<div class="gate-info">
+<p><b>Operation:</b> Output = 1 when any input is 1.<br/>
+<b>Symbol:</b> <span class="mono">a+b</span></p>
+</div>
+<div class="gate-figure">
+<img alt="OR gate symbol" src="or-gate.jpg"/>
+</div>
+</div>
+<div class="tt-wrap">
+<table class="tt-table">
+<thead>
+<tr><th>a</th><th>b</th><th>a+b</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>1</td></tr>
+</tbody>
+</table>
+</div>
+<div aria-label="OR Gate Interactive Simulator" class="simulator" role="region">
+<h3 aria-hidden="true">Interactive Simulator</h3>
+<div class="sim-container">
+<div aria-label="Inputs" class="sim-inputs" role="group">
+<button aria-pressed="false" class="sim-btn" id="or-in-a" onclick="toggleSimInput('or', 'a')" type="button">Input a: 0</button>
+<button aria-pressed="false" class="sim-btn" id="or-in-b" onclick="toggleSimInput('or', 'b')" type="button">Input b: 0</button>
+</div>
+<div aria-hidden="true" class="sim-flow-arrow">→</div>
+<div aria-hidden="true" class="sim-gate-box" style="background-color: #0ea5e9;">OR</div>
+<div aria-hidden="true" class="sim-flow-arrow">→</div>
+<div aria-atomic="true" aria-live="polite" class="sim-output" id="or-out">Output: 0</div>
+</div>
+</div>
+</section>
+<section class="section">
+<h2>NOT Gate</h2>
+<div class="gate-flex">
+<div class="gate-info">
+<p><b>Operation:</b> Output = 1 when input is 0; Output = 0 when input is 1.<br/>
+<b>Symbol:</b> <span class="mono">a’</span>, <span class="mono">~a</span>, <span class="mono">a̅</span></p>
+</div>
+<div class="gate-figure">
+<img alt="NOT gate symbol" src="not-gate.jpg"/>
+</div>
+</div>
+<div class="tt-wrap">
+<table class="tt-table">
+<thead>
+<tr><th>a</th><th>a’</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>1</td></tr>
+<tr><td>1</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+<div aria-label="NOT Gate Interactive Simulator" class="simulator" role="region">
+<h3 aria-hidden="true">Interactive Simulator</h3>
+<div class="sim-container">
+<div aria-label="Input" class="sim-inputs" role="group">
+<button aria-pressed="false" class="sim-btn" id="not-in-a" onclick="toggleSimInput('not', 'a')" type="button">Input a: 0</button>
+</div>
+<div aria-hidden="true" class="sim-flow-arrow">→</div>
+<div aria-hidden="true" class="sim-gate-box" style="background-color: #f59e0b;">NOT</div>
+<div aria-hidden="true" class="sim-flow-arrow">→</div>
+<div aria-atomic="true" aria-live="polite" class="sim-output active" id="not-out">Output: 1</div>
+</div>
+</div>
+</section>
+<section class="section">
+<h2>6. Find output for the following circuit with inputs <i>(a=1, b=1, c=1)</i></h2>
+<div class="circuit-img-wrap" style="margin-bottom:1.5rem;">
+<img alt="Logic circuit for question 6" src="circuit-6.jpg" style="max-width:320px; width:100%; height:auto; border:1px solid #e2e8f0; border-radius:6px; background:#fff; box-shadow:0 2px 8px 0 rgba(0,0,0,0.04);"/>
+<details class="circuit-desc">
+<summary>Text description of circuit 6</summary>
+<p>This circuit has three inputs labeled a, b, and c. Inputs b and c flow into an AND gate. The output of that AND gate, along with input a, flow into a final AND gate to produce the output.</p>
+</details>
+</div>
+<form class="circuit-form" onsubmit="checkCircuitOutput(event, 6, 1)">
+<label for="circuit6-output">Output:</label>
+<input id="circuit6-output" max="1" min="0" required="" type="number"/>
+<button type="submit">Check Answer</button>
+<span class="feedback" id="circuit6-feedback"></span>
+</form>
+</section>
+<section class="section">
+<h2>7. Find output for the following circuit with inputs <i>(a=1, b=0, c=1)</i></h2>
+<div class="circuit-img-wrap" style="margin-bottom:1.5rem;">
+<img alt="Logic circuit for question 7" src="circuit-7.jpg" style="max-width:320px; width:100%; height:auto; border:1px solid #e2e8f0; border-radius:6px; background:#fff; box-shadow:0 2px 8px 0 rgba(0,0,0,0.04);"/>
+<details class="circuit-desc">
+<summary>Text description of circuit 7</summary>
+<p>This circuit has three inputs labeled a, b, and c. Inputs a and b flow into an AND gate. The output of that AND gate, along with input c, flow into a final AND gate to produce the output.</p>
+</details>
+</div>
+<form class="circuit-form" onsubmit="checkCircuitOutput(event, 7, 0)">
+<label for="circuit7-output">Output:</label>
+<input id="circuit7-output" max="1" min="0" required="" type="number"/>
+<button type="submit">Check Answer</button>
+<span class="feedback" id="circuit7-feedback"></span>
+</form>
+</section>
+<section class="section">
+<h2>8. Find output for the following circuit with inputs <i>(a=0, b=0, c=1)</i></h2>
+<div class="circuit-img-wrap" style="margin-bottom:1.5rem;">
+<img alt="Logic circuit for question 8" src="circuit-8.jpg" style="max-width:320px; width:100%; height:auto; border:1px solid #e2e8f0; border-radius:6px; background:#fff; box-shadow:0 2px 8px 0 rgba(0,0,0,0.04);"/>
+<details class="circuit-desc">
+<summary>Text description of circuit 8</summary>
+<p>This circuit has three inputs labeled a, b, and c. Inputs a, b and c flow into an AND gate to produce the output.</p>
+</details>
+</div>
+<form class="circuit-form" onsubmit="checkCircuitOutput(event, 8, 0)">
+<label for="circuit8-output">Output:</label>
+<input id="circuit8-output" max="1" min="0" required="" type="number"/>
+<button type="submit">Check Answer</button>
+<span class="feedback" id="circuit8-feedback"></span>
+</form>
+</section>
+<section class="section">
+<h2>9. Derive the logic function for the following circuit diagram</h2>
+<div class="circuit-img-wrap" style="margin-bottom:1.5rem;">
+<img alt="A logic circuit with 3 inputs and 2 gates. Expand description for routing details." src="circuit-9.png" style="max-width:320px; width:100%; height:auto; border:1px solid #e2e8f0; border-radius:6px; background:#fff; box-shadow:0 2px 8px 0 rgba(0,0,0,0.04);"/>
+<details class="circuit-desc">
+<summary>Text description of circuit 9</summary>
+<p>This circuit has three inputs labeled x, y, and z. Inputs x' and y flow into an AND gate. Inputs x and y' flow into another AND gate. Inputs x and z flow into a third AND gate.  The outputs of three AND gates, flow into a final AND gate to produce the output.</p>
+</details>
+</div>
+<form class="circuit-form" onsubmit="checkLogicFunction(event, 9, `a·(b+c)`)">
+<label for="circuit9-func">Logic Function:</label>
+<input id="circuit9-func" placeholder="e.g. a·(b+c)" required="" type="text"/>
+<button type="submit">Check Answer</button>
+<span class="feedback" id="circuit9-feedback"></span>
+</form>
+</section>
+ </section> 
+<section class="section">
+<h2>10. Derive the logic function for the following circuit diagram</h2>
+<div class="circuit-img-wrap" style="margin-bottom:1.5rem;">
+<img alt="A logic circuit with 3 inputs and 2 gates. Expand description for routing details." src="circuit-10.png" style="max-width:320px; width:100%; height:auto; border:1px solid #e2e8f0; border-radius:6px; background:#fff; box-shadow:0 2px 8px 0 rgba(0,0,0,0.04);"/>
+<details class="circuit-desc">
+<summary>Text description of circuit 10</summary>
+<p>This circuit has three inputs: x, y, and z, which split into three parallel branches.
+            In the first branch, input x passes through a NOT gate, and then flows into an AND gate alongside input y.
+            In the second branch, input y passes through a NOT gate, and then flows into an AND gate alongside input x.
+            In the third branch, inputs x and z flow directly into an AND gate.
+            Finally, the outputs of all three AND gates flow into a single OR gate to produce the final output.</p>
+</details>
+</div>
+<form class="circuit-form" onsubmit="checkLogicFunction(event, 10, `a+b·c`)">
+<label for="circuit10-func">Logic Function:</label>
+<input id="circuit10-func" placeholder="e.g. a+b·c" required="" type="text"/>
+<button type="submit">Check Answer</button>
+<span class="feedback" id="circuit10-feedback"></span>
+</form>
+</section>
+
+<nav class="pager" aria-label="Lesson navigation"><a class="pager-prev" href="../02-binary-arithmetic/index.html"><span class="pager-label">Previous lesson</span><span class="pager-title">Binary Addition &amp; Subtraction</span></a><a class="pager-next" href="../04-truth-tables/index.html"><span class="pager-label">Next lesson</span><span class="pager-title">Truth Tables</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

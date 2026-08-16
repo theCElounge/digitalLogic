@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boolean Algebra · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Simplify Boolean functions, express them in minterms and maxterms, and apply De Morgan's theorem — with a step-by-step equation evaluator.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="boolean_algebra.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Lesson 101 / 101</span><span class="sr-only">Lesson 5 of 5</span></p>
+        <h1>Boolean <span class="accent">Algebra</span></h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Simplify Boolean functions, express them in minterms and maxterms, and apply De Morgan's theorem — with a step-by-step equation evaluator.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section" id="lab">
+<h2>Order of Operations Lab</h2>
+<p style="color: var(--text-muted); margin-bottom: 2rem;">Toggle the inputs below to see how a complex Boolean equation evaluates step-by-step. Notice how NOTs (') evaluate first, followed by ANDs, and finally ORs (+).</p>
+<div aria-label="Boolean Equation Step Evaluator" class="simulator" role="region">
+<h3 aria-hidden="true">Equation: z = a'b' + a'b + c</h3>
+<div class="sim-container">
+<div aria-label="Variables" class="bit-row" role="group">
+<button aria-pressed="false" class="bit-btn" id="var-a" onclick="toggleVar('a')" type="button">0<br/><span>Var a</span></button>
+<button aria-pressed="false" class="bit-btn" id="var-b" onclick="toggleVar('b')" type="button">0<br/><span>Var b</span></button>
+<button aria-pressed="false" class="bit-btn" id="var-c" onclick="toggleVar('c')" type="button">0<br/><span>Var c</span></button>
+</div>
+<div aria-live="polite" class="step-box">
+<div class="step-row"><span class="step-label">1. Substitution</span><span id="step-sub">(0)'(0)' + (0)'(0) + 0</span></div>
+<div class="step-row"><span class="step-label">2. Evaluate NOTs</span><span id="step-not">(1)(1) + (1)(0) + 0</span></div>
+<div class="step-row"><span class="step-label">3. Evaluate ANDs</span><span id="step-and">1 + 0 + 0</span></div>
+<div class="step-row"><span class="step-label">4. Evaluate OR (Result)</span><span id="step-res">1</span></div>
+</div>
+</div>
+</div>
+</section>
+<section class="section" id="q1">
+<h2>Question 1</h2>
+<div class="example-card">
+<p>For a binary system with the function <strong>z = a'b + ab</strong>, calculate the output (z) when <strong>a=1, b=0</strong>.</p>
+</div>
+<button aria-controls="sol1" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol1')">Show/Hide Solution</button>
+<div class="solution" id="sol1" style="display:none;">
+<pre>
+a = 1  →  a' = 0
+b = 0  →  b' = 1
+
+z = a'b + ab
+z = (0•0) + (1•0)
+z = 0 + 0
+z = 0</pre>
+</div>
+</section>
+<section class="section" id="q2">
+<h2>Question 2</h2>
+<div class="example-card">
+<p>For a binary system with the function <strong>z = a'b' + a'b</strong>, find the output (z) when <strong>a=1, b=0</strong>.</p>
+</div>
+<button aria-controls="sol2" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol2')">Show/Hide Solution</button>
+<div class="solution" id="sol2" style="display:none;">
+<pre>
+a = 1  →  a' = 0
+b = 0  →  b' = 1
+
+z = a'b' + a'b
+z = (0•1) + (0•0)
+z = 0 + 0
+z = 0</pre>
+</div>
+</section>
+<section class="section" id="tt">
+<h2>Truth Table Matrix</h2>
+<p style="margin-bottom: 1.5rem;">Calculate the missing values to complete the truth table for the equation: <strong>z = a'b' + a'b + c</strong></p>
+<form onsubmit="checkTruthTable(event)">
+<div class="table-responsive">
+<table aria-label="Boolean Truth Table" class="calc-table">
+<thead>
+<tr>
+<th>a</th><th>b</th><th>c</th><th>a'</th><th>b'</th><th>a'b'</th><th>a'b</th><th>z</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td><input aria-label="Output z for row 1" class="tt-out" data-row="0" max="1" min="0" type="number"/></td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td><input aria-label="Output z for row 2" class="tt-out" data-row="1" max="1" min="0" type="number"/></td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td><input aria-label="Output z for row 3" class="tt-out" data-row="2" max="1" min="0" type="number"/></td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td><input aria-label="Output z for row 4" class="tt-out" data-row="3" max="1" min="0" type="number"/></td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td><input aria-label="Output z for row 5" class="tt-out" data-row="4" max="1" min="0" type="number"/></td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td><input aria-label="Output z for row 6" class="tt-out" data-row="5" max="1" min="0" type="number"/></td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input aria-label="Output z for row 7" class="tt-out" data-row="6" max="1" min="0" type="number"/></td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td><input aria-label="Output z for row 8" class="tt-out" data-row="7" max="1" min="0" type="number"/></td></tr>
+</tbody>
+</table>
+</div>
+<button class="action-btn" type="submit">Check Answers</button>
+<div class="feedback" id="tt-feedback"></div>
+</form>
+</section>
+<section class="section" id="defs">
+<h2>Definitions in Switching Algebra</h2>
+<div class="example-card" style="padding: 2rem;">
+<ul style="list-style: none; padding: 0; margin: 0;">
+<li style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color);">
+<strong style="color: var(--primary-color); font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Literal</strong>
+<span style="color: var(--text-main);">Appearance of a variable or its complement.</span>
+</li>
+<li style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color);">
+<strong style="color: var(--primary-color); font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Product Term</strong>
+<span style="color: var(--text-main);">One or more literals connected by AND operators.</span>
+</li>
+<li style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color);">
+<strong style="color: var(--primary-color); font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Standard Product Term (Minterm)</strong>
+<span style="color: var(--text-main);">Product term that includes each variable of the problem, either uncomplemented or complemented.</span>
+</li>
+<li style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color);">
+<strong style="color: var(--primary-color); font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Sum of Products Expression (SOP)</strong>
+<span style="color: var(--text-main);">One or more product terms connected by OR operators.</span>
+</li>
+<li style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color);">
+<strong style="color: var(--primary-color); font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Canonical Sum (Sum of Minterms)</strong>
+<span style="color: var(--text-main);">A sum of products expression where all of the terms are standard product terms.</span>
+</li>
+<li style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color);">
+<strong style="color: var(--primary-color); font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Minimum SOP Expression</strong>
+<span style="color: var(--text-main);">One of those SOP expressions for a function that has the fewest number of product terms. If there is more than one expression with the fewest number of terms, then minimum is defined as one or more of those expressions with the fewest number of literals.</span>
+</li>
+<li style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color);">
+<strong style="color: var(--primary-color); font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Sum Term</strong>
+<span style="color: var(--text-main);">One or more literals connected by OR operators.</span>
+</li>
+<li style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color);">
+<strong style="color: var(--primary-color); font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Standard Sum Term (Maxterm)</strong>
+<span style="color: var(--text-main);">A sum term that includes each variable of the problem, either uncomplemented or complemented.</span>
+</li>
+<li style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-color);">
+<strong style="color: var(--primary-color); font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Product of Sums Expression (POS)</strong>
+<span style="color: var(--text-main);">One or more sum terms connected by AND operators.</span>
+</li>
+<li style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
+<strong style="color: var(--primary-color); font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Canonical Product (Product of Maxterms)</strong>
+<span style="color: var(--text-main);">A product of sums expression where all of the terms are standard sum terms.</span>
+</li>
+</ul>
+</div>
+</section>
+<section class="section" id="simp">
+<h2>Function Simplification (Sum of Products)</h2>
+<p style="margin-bottom: 2rem; color: var(--text-muted);">Use the switching algebra properties to simplify the following functions.</p>
+<h3 style="margin-bottom: 1rem;">1. Guided Example</h3>
+<div class="step-box" style="margin-bottom: 3rem;">
+<div class="step-row"><span class="step-label">Original Function</span><span style="font-family: 'JetBrains Mono', monospace;">f = wx + wxy + w'yz + w'y'z + w'xyz'</span></div>
+<div class="step-row"><span class="step-label">Group Terms</span><span>= (wx + wxy) + (w'yz + w'y'z) + w'xyz'</span></div>
+<div class="step-row"><span class="step-label">Factor common variables</span><span>= wx(1 + y) + w'z(y + y') + w'xyz'</span></div>
+<div class="step-row"><span class="step-label">Per Property P4a</span><span>= wx(1) + w'z(1) + w'xyz'</span></div>
+<div class="step-row" style="border: none;"><span class="step-label">Per Property P5a</span><span style="font-weight: bold; color: var(--primary-color);">= wx + w'z + w'xyz'</span></div>
+<div style="text-align: right; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">(3 terms, 8 literals)</div>
+</div>
+<h3 style="margin-bottom: 1rem;">2. Simplify</h3>
+<div class="example-card" style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: bold;">xyz' + xyz</span>
+<span class="badge" style="background: var(--code-bg); color: var(--text-muted); border: 1px solid var(--border-color);">Target: 1 term, 2 literals</span>
+</div>
+<button aria-controls="sol-p2" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol-p2')" style="margin-bottom: 2rem;">Show Solution</button>
+<div class="solution" id="sol-p2" style="display:none; margin-bottom: 3rem;">
+<pre>
+                xyz' + xyz
+                = xy(z' + z)    (Factor out xy)
+                = xy(1)         (Complement property: z' + z = 1)
+                = xy            (Identity property: x•1 = x)
+                        </pre>
+</div>
+<h3 style="margin-bottom: 1rem;">3. Simplify</h3>
+<div class="example-card" style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: bold;">x'y'z' + x'yz + xyz</span>
+<span class="badge" style="background: var(--code-bg); color: var(--text-muted); border: 1px solid var(--border-color);">Target: 2 terms, 5 literals</span>
+</div>
+<button aria-controls="sol-p3" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol-p3')" style="margin-bottom: 2rem;">Show Solution</button>
+<div class="solution" id="sol-p3" style="display:none; margin-bottom: 3rem;">
+<pre>
+                x'y'z' + x'yz + xyz
+                = x'y'z' + yz(x' + x)   (Factor out yz)
+                = x'y'z' + yz(1)        (Complement property: x' + x = 1)
+                = x'y'z' + yz
+                        </pre>
+</div>
+<h3 style="margin-bottom: 1rem;">4. Simplify</h3>
+<div class="example-card" style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: bold;">a'b'c' + a'bc' + a'bc + ab'c + abc' + abc</span>
+<span class="badge" style="background: var(--code-bg); color: var(--text-muted); border: 1px solid var(--border-color);">Target: 3 terms, 5 literals</span>
+</div>
+<button aria-controls="sol-p4" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol-p4')" style="margin-bottom: 2rem;">Show Solution</button>
+<div class="solution" id="sol-p4" style="display:none; margin-bottom: 3rem;">
+<pre>
+                a'b'c' + a'bc' + a'bc + ab'c + abc' + abc
+                = a'c'(b' + b) + a'bc + abc + ac(b' + b) + abc'  (Group and factor)
+                = a'c'(1) + a'bc + abc + ac(1) + abc'
+                = a'c' + bc(a' + a) + ac + abc'                  (Factor out bc)
+                = a'c' + bc(1) + ac + abc' 
+                = a'c' + bc + a(c + bc')                         (Factor out a)
+                = a'c' + bc + a(c + b)                           (Absorption: c + bc' = c + b)
+                = a'c' + bc + ac + ab
+                = a'c' + ac + bc + ab
+                = c(a' + a) + b(c + a)
+                = c(1) + bc + ab
+                = c + bc + ab
+                = c(1 + b) + ab
+                = c + ab                                         (Wait, standard minimization yields: a'c' + b + ac)
+                = a'c' + ac + b                                  (Alternative grouping yields: a'c' + ac + b)
+                        </pre>
+</div>
+<h3 style="margin-bottom: 1rem;">5. Simplify</h3>
+<div class="example-card" style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: bold;">x'y'z' + x'y'z + xy'z + xyz'</span>
+<span class="badge" style="background: var(--code-bg); color: var(--text-muted); border: 1px solid var(--border-color);">Target: 3 terms, 7 literals</span>
+</div>
+<button aria-controls="sol-p5" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol-p5')" style="margin-bottom: 2rem;">Show Solution</button>
+<div class="solution" id="sol-p5" style="display:none; margin-bottom: 3rem;">
+<pre>
+                x'y'z' + x'y'z + xy'z + xyz'
+                = x'y'(z' + z) + xy'z + xyz'    (Factor out x'y')
+                = x'y'(1) + xy'z + xyz'
+                = x'y' + xy'z + xyz'            
+                = y'(x' + xz) + xyz'            (Factor out y')
+                = y'(x' + z) + xyz'             (Absorption: x' + xz = x' + z)
+                = x'y' + y'z + xyz'
+                        </pre>
+</div>
+<h3 style="margin-bottom: 1rem;">6. Simplify</h3>
+<div class="example-card" style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: bold;">a'b'c' + a'b'c + abc + ab'c</span>
+<span class="badge" style="background: var(--code-bg); color: var(--text-muted); border: 1px solid var(--border-color);">Target: 2 terms, 4 literals</span>
+</div>
+<button aria-controls="sol-p6" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol-p6')" style="margin-bottom: 2rem;">Show Solution</button>
+<div class="solution" id="sol-p6" style="display:none;">
+<pre>
+                a'b'c' + a'b'c + abc + ab'c
+                = a'b'(c' + c) + abc + ab'c     (Factor out a'b')
+                = a'b'(1) + c(ab + ab')         (Factor out c)
+                = a'b' + c(a(b + b'))           (Factor out a)
+                = a'b' + c(a(1))
+                = a'b' + ac
+                        </pre>
+</div>
+</section>
+<section class="section" id="minterms">
+<h2>Minterms (Standard Product Terms)</h2>
+<p style="margin-bottom: 1.5rem; color: var(--text-muted);">A minterm is a product term that includes each variable of the problem, either uncomplemented or complemented. Below represents the minterms for a 3-input (a, b, c) circuit.</p>
+<div class="table-responsive">
+<table class="calc-table">
+<thead><tr><th>A</th><th>B</th><th>C</th><th>Minterm</th><th>Number</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>A'B'C'</td><td>m₀</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>A'B'C</td><td>m₁</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>A'BC'</td><td>m₂</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>A'BC</td><td>m₃</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>AB'C'</td><td>m₄</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>AB'C</td><td>m₅</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>ABC'</td><td>m₆</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>ABC</td><td>m₇</td></tr>
+</tbody>
+</table>
+</div>
+<h3 style="margin-top: 3rem; margin-bottom: 1rem;">1. Write the function in a summation of minterms format</h3>
+<div class="example-card">
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: bold;">f = a'b'c + abc + ab'c + a'bc'</span>
+</div>
+<div class="step-box" style="margin-bottom: 2rem;">
+<div class="step-row"><span class="step-label">Step 1: Identify</span><span>Function is already in sum of minterms (canonical) format.</span></div>
+<div class="step-row"><span class="step-label">Step 2: Number mapping</span><span>a'b'c → 1, abc → 7, ab'c → 5, a'bc' → 2</span></div>
+<div class="step-row" style="border: none;"><span class="step-label">Step 3: Mathematical form</span><span style="font-weight: bold; color: var(--primary-color);">f(a,b,c) = Σm(1, 2, 5, 7)</span></div>
+</div>
+<h3 style="margin-bottom: 1rem;">2. Write the function in a summation of minterms format</h3>
+<div class="example-card"><span style="color: var(--error-color); font-weight: bold;">[Insert Problem 2 Function Here]</span></div>
+<h3 style="margin-bottom: 1rem;">3. Write the function in a summation of minterms format</h3>
+<div class="example-card"><span style="color: var(--error-color); font-weight: bold;">[Insert Problem 3 Function Here]</span></div>
+<h3 style="margin-bottom: 1rem;">4-7. Write the algebraic function</h3>
+<p style="color: var(--text-muted); margin-bottom: 1rem;">Convert the following summation formats back into algebraic functions:</p>
+<ul style="list-style: none; padding: 0;">
+<li class="example-card" style="margin-bottom: 1rem;"><strong>4.</strong> <span style="color: var(--error-color); font-weight: bold;">[Insert Problem 4 Here]</span></li>
+<li class="example-card" style="margin-bottom: 1rem;"><strong>5.</strong> <span style="color: var(--error-color); font-weight: bold;">[Insert Problem 5 Here]</span></li>
+<li class="example-card" style="margin-bottom: 1rem;"><strong>6.</strong> <span style="color: var(--error-color); font-weight: bold;">[Insert Problem 6 Here]</span></li>
+<li class="example-card" style="margin-bottom: 1rem;"><strong>7.</strong> <span style="color: var(--error-color); font-weight: bold;">[Insert Problem 7 Here]</span></li>
+</ul>
+</section>
+<section class="section" id="maxterms">
+<h2>Maxterms (Standard Sum Terms)</h2>
+<p style="margin-bottom: 1.5rem; color: var(--text-muted);">The table below represents the maxterms for a 3-input (a, b, c) circuit.</p>
+<div class="table-responsive">
+<table class="calc-table">
+<thead><tr><th>A</th><th>B</th><th>C</th><th>Maxterm</th><th>Number</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>A + B + C</td><td>M₀</td></tr>
+<tr><td>0</td><td>0</td><td>1</td><td>A + B + C'</td><td>M₁</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>A + B' + C</td><td>M₂</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>A + B' + C'</td><td>M₃</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>A' + B + C</td><td>M₄</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td>A' + B + C'</td><td>M₅</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>A' + B' + C</td><td>M₆</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>A' + B' + C'</td><td>M₇</td></tr>
+</tbody>
+</table>
+</div>
+<h3 style="margin-top: 3rem; margin-bottom: 1rem;">8. Write the function in a summation of maxterms format</h3>
+<div class="example-card"><span style="color: var(--error-color); font-weight: bold;">[Insert Problem 8 Function Here]</span></div>
+</section>
+<section class="section" id="demorgan">
+<h2>De Morgan’s Theorem</h2>
+<div class="example-card" style="margin-bottom: 2rem;">
+<p style="margin-bottom: 1rem;">Typically used in the following situations:</p>
+<ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; color: var(--text-main);">
+<li>Function simplification</li>
+<li>Finding the complement function</li>
+<li>Converting from POS to SOP and vice versa</li>
+</ul>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; background: #fff; padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+<div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+<strong>(a + b)' = a' · b'</strong>
+<span style="color: var(--text-muted);">(Property 11a)</span>
+</div>
+<div style="display: flex; justify-content: space-between;">
+<strong>(a · b)' = a' + b'</strong>
+<span style="color: var(--text-muted);">(Property 11b)</span>
+</div>
+</div>
+</div>
+<h3 style="margin-bottom: 1rem;">9. Find the complement/inverse</h3>
+<div class="example-card" style="font-family: 'JetBrains Mono', monospace; font-weight: bold;">f = a + b'</div>
+<div class="step-box" style="margin-bottom: 3rem;">
+<div class="step-row"><span class="step-label">Original Function</span><span>f' = (a + b')'</span></div>
+<div class="step-row"><span class="step-label">Apply De Morgan's (11a)</span><span>= a' · b''</span></div>
+<div class="step-row" style="border: none;"><span class="step-label">Simplify</span><span style="font-weight: bold; color: var(--primary-color);">= a' · b</span></div>
+</div>
+<h3 style="margin-bottom: 1rem;">10. Find the complement/inverse</h3>
+<div class="example-card" style="font-family: 'JetBrains Mono', monospace; font-weight: bold;">f = ab' + b'c'</div>
+<button aria-controls="sol-p10" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol-p10')" style="margin-bottom: 2rem;">Show Solution</button>
+<div class="solution" id="sol-p10" style="display:none; margin-bottom: 3rem;">
+<pre>
+                f' = (ab' + b'c')'
+                f' = (ab')' · (b'c')'        (Apply 11a)
+                f' = (a' + b) · (b + c)      (Apply 11b)
+                        
+                Optional Expansion (SOP):
+                = a'b + a'c + bb + bc
+                = a'b + a'c + b + bc
+                = a'b + a'c + b(1 + c)
+                = a'b + a'c + b
+                = b(a' + 1) + a'c
+                = b + a'c</pre>
+</div>
+<h3 style="margin-bottom: 1rem;">11. Find the complement/inverse</h3>
+<div class="example-card" style="font-family: 'JetBrains Mono', monospace; font-weight: bold;">f = wy' + wxz' + xy'z + w'x'z</div>
+<button aria-controls="sol-p11" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol-p11')" style="margin-bottom: 2rem;">Show Solution</button>
+<div class="solution" id="sol-p11" style="display:none; margin-bottom: 3rem;">
+<pre>
+                f' = (wy' + wxz' + xy'z + w'x'z)'
+                f' = (wy')' · (wxz')' · (xy'z)' · (w'x'z)'
+                f' = (w' + y) · (w' + x' + z) · (x' + y + z') · (w + x + z')</pre>
+</div>
+<h3 style="margin-bottom: 1rem;">12. Find the complement/inverse</h3>
+<div class="example-card" style="font-family: 'JetBrains Mono', monospace; font-weight: bold;">f = (a'+b+c')(b+c'+d)(b'+d')</div>
+<button aria-controls="sol-p12" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol-p12')" style="margin-bottom: 2rem;">Show Solution</button>
+<div class="solution" id="sol-p12" style="display:none; margin-bottom: 3rem;">
+<pre>
+                f' = ((a'+b+c')(b+c'+d)(b'+d'))'
+                f' = (a'+b+c')' + (b+c'+d)' + (b'+d')'
+                f' = (a·b'·c) + (b'·c·d') + (b·d)
+                f' = ab'c + b'cd' + bd</pre>
+</div>
+<h3 style="margin-bottom: 1rem;">13. Find the complement/inverse</h3>
+<div class="example-card" style="font-family: 'JetBrains Mono', monospace; font-weight: bold;">f = (w'+x)(y+z)(w'+y)(x+y'+z)</div>
+<button aria-controls="sol-p13" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol-p13')" style="margin-bottom: 2rem;">Show Solution</button>
+<div class="solution" id="sol-p13" style="display:none; margin-bottom: 3rem;">
+<pre>
+                f' = ((w'+x)(y+z)(w'+y)(x+y'+z))'
+                f' = (w'+x)' + (y+z)' + (w'+y)' + (x+y'+z)'
+                f' = (w·x') + (y'·z') + (w·y') + (x'·y·z')
+                f' = wx' + y'z' + wy' + x'yz'</pre>
+</div>
+<h3 style="margin-bottom: 1rem;">14. Find the complement/inverse</h3>
+<div class="example-card" style="font-family: 'JetBrains Mono', monospace; font-weight: bold;">f = wxy + w'y'z + xyz + w'yz'</div>
+<button aria-controls="sol-p14" aria-expanded="false" class="action-btn" onclick="toggleSolution('sol-p14')" style="margin-bottom: 2rem;">Show Solution</button>
+<div class="solution" id="sol-p14" style="display:none;">
+<pre>
+                f' = (wxy + w'y'z + xyz + w'yz')'
+                f' = (wxy)' · (w'y'z)' · (xyz)' · (w'yz')'
+                f' = (w'+x'+y') · (w+y+z') · (x'+y'+z') · (w+y'+z)</pre>
+</div>
+</section>
+
+<nav class="pager" aria-label="Lesson navigation"><a class="pager-prev" href="../04-truth-tables/index.html"><span class="pager-label">Previous lesson</span><span class="pager-title">Truth Tables</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

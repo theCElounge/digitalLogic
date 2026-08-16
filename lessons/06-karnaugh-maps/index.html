@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karnaugh Maps · Digital Logic and Computer Organization</title>
+    <meta name="description" content="What K-maps are, why they're needed, how Gray-code adjacency makes grouping work, the grouping rules, and worked examples for 2-, 3-, and 4-variable maps.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="kmaps.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Lesson 0110 / 1101</span><span class="sr-only">Lesson 6 of 13</span></p>
+        <h1>Karnaugh <span class="accent">Maps</span></h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">A grid-based tool for simplifying Boolean expressions by eye. Build one, group the 1s, and read off the simplest sum-of-products form.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section" id="interactive-lab">
+<h2>Interactive Lab</h2>
+<p class="section-intro">Click cells to cycle through 0 &rarr; 1 &rarr; X (don&rsquo;t care) &rarr; 0. Watch the minterm list and the canonical, <em>unsimplified</em> expression update &mdash; then use the rules further down the page to simplify it yourself.</p>
+<div aria-label="4-variable K-map explorer" class="simulator" role="region">
+<h3 aria-hidden="true">4-Variable K-Map Explorer</h3>
+<div class="kmap-explorer">
+<div class="kmap-wrap">
+<table class="kmap" id="kmap-explorer-table">
+<thead></thead>
+<tbody></tbody>
+</table>
+</div>
+<div class="kmap-explorer-controls">
+<button class="btn-ghost" id="kmap-explorer-clear" type="button">Clear map</button>
+</div>
+<div aria-hidden="true" class="sim-equation" id="kmap-explorer-sum">F(A,B,C,D) = 0</div>
+<div aria-hidden="true" class="sim-equation" id="kmap-explorer-expr">0</div>
+<div aria-live="polite" class="sr-only" id="kmap-explorer-announcer">No minterms selected.</div>
+</div>
+</div>
+</section>
+
+<section class="section" id="what-are-kmaps">
+<h2>What Is a Karnaugh Map?</h2>
+<p>A <strong>Karnaugh map</strong> (K-map) is a graphical tool for simplifying Boolean expressions. It takes a truth table and rearranges it into a grid where every cell holds one minterm &mdash; but the rows and columns are ordered so that any two neighboring cells differ in exactly <strong>one</strong> input variable.</p>
+<p>Each cell holds a <code>1</code> where the function is true, a <code>0</code> where it&rsquo;s false, and sometimes an <code>X</code> for a &ldquo;don&rsquo;t care&rdquo; &mdash; an input combination whose output doesn&rsquo;t matter. Once the map is filled in, the simplification becomes a pattern-spotting exercise: you circle rectangular blocks of adjacent 1s, and each block turns directly into a simplified term.</p>
+</section>
+
+<section class="section" id="why-kmaps">
+<h2>Why Are K-Maps Needed?</h2>
+<p>A truth table gives you a function as a raw <strong>sum of minterms</strong> &mdash; one product term per row where the output is 1. That expression is almost always larger than it needs to be, and simplifying it by hand with Boolean algebra (absorption, consensus, De Morgan&rsquo;s) is easy to get wrong and hard to know when you&rsquo;re actually done.</p>
+<div class="instructions">
+<p><strong>Key idea:</strong> because adjacent K-map cells differ in only one variable, any rectangular group of 2, 4, 8&hellip; adjacent 1s corresponds to a term where the differing variable(s) simply drop out. Bigger group, simpler term &mdash; and it&rsquo;s always correct.</p>
+</div>
+<p>Fewer terms and literals mean fewer logic gates, less propagation delay, and less power &mdash; and for 2&ndash;4 variables, a K-map finds the minimum sum-of-products almost as reliably as an algorithm, without the paperwork of Quine&ndash;McCluskey.</p>
+</section>
+
+<section class="section" id="how-kmaps-work">
+<h2>How Karnaugh Maps Work</h2>
+<p class="section-intro">The whole trick is <strong>Gray-code ordering</strong>: instead of counting 00, 01, 10, 11, the headers are ordered so only one bit changes between neighbors.</p>
+<p>Gray-code sequence for 2 bits: <code>00</code> &rarr; <code>01</code> &rarr; <code>11</code> &rarr; <code>10</code> &rarr; back to <code>00</code>. Every step flips exactly one bit &mdash; including the wraparound step from <code>10</code> back to <code>00</code>.</p>
+<p>Because of that ordering:</p>
+<ul>
+<li>Cells that are horizontally or vertically next to each other differ in exactly one variable.</li>
+<li>The map <strong>wraps around</strong>: the leftmost column is adjacent to the rightmost column, and the top row is adjacent to the bottom row &mdash; it behaves like the surface of a torus, not a flat sheet.</li>
+<li>Diagonal neighbors are <strong>not</strong> adjacent &mdash; they differ in two variables at once.</li>
+</ul>
+<p>Below is a blank 4-variable map with each cell labeled by its minterm number, showing how row pair (A,B) and column pair (C,D) address every cell:</p>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead>
+<tr><th class="kmap-corner">AB \ CD</th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
+</thead>
+<tbody>
+<tr><th>00</th><td>m0</td><td>m1</td><td>m3</td><td>m2</td></tr>
+<tr><th>01</th><td>m4</td><td>m5</td><td>m7</td><td>m6</td></tr>
+<tr><th>11</th><td>m12</td><td>m13</td><td>m15</td><td>m14</td></tr>
+<tr><th>10</th><td>m8</td><td>m9</td><td>m11</td><td>m10</td></tr>
+</tbody>
+</table>
+</div>
+<p>Fill each cell with the truth-table output for that minterm, then group.</p>
+</section>
+
+<section class="section" id="grouping-rules">
+<h2>Rules for Grouping</h2>
+<ol class="steps">
+<li><strong>Only combine 1s (and don&rsquo;t cares).</strong> Never group a 0 &mdash; but you may treat an X as a 1 when it helps form a bigger group, or ignore it when it doesn&rsquo;t.</li>
+<li><strong>Group sizes must be a power of 2</strong> &mdash; 1, 2, 4, 8, 16 cells. Never 3, 5, or 6.</li>
+<li><strong>Groups must be rectangular</strong>, including wraparound across an edge &mdash; never an L-shape or other irregular outline.</li>
+<li><strong>Make groups as large as possible.</strong> A bigger group eliminates more variables and gives a simpler term.</li>
+<li><strong>Groups may overlap.</strong> The same 1 can belong to more than one group if that lets each group be as large as possible.</li>
+<li><strong>Every 1 must be covered</strong> by at least one group &mdash; none can be left out.</li>
+<li><strong>Use the minimum number of groups</strong> needed to cover every 1, since fewer groups means fewer terms in the final expression.</li>
+<li><strong>Don&rsquo;t cares are optional helpers.</strong> Use an X only when it lets you form a larger group; you never need to cover an X on its own.</li>
+<li><strong>Read each group as a product term:</strong> keep only the variables that stay constant across the whole group (0 &rarr; complemented, 1 &rarr; uncomplemented); drop any variable that varies within the group.</li>
+<li><strong>OR all the group terms together</strong> for the final simplified sum-of-products expression.</li>
+</ol>
+<div class="callout-warning">
+<p><strong>Common mistakes:</strong> circling a group of 3 or 6 cells, treating diagonal cells as adjacent, or forgetting that the map wraps top-to-bottom and left-to-right.</p>
+</div>
+</section>
+
+<section class="section" id="two-variable">
+<h2>Two-Variable K-Maps</h2>
+<p class="section-intro">4 cells (2&sup2;), one per combination of A and B.</p>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">1. F(A,B) = &Sigma;(0, 1, 3)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">A \ B</th><th>0</th><th>1</th></tr></thead>
+<tbody>
+<tr><th>0</th><td class="cell-1 grp-a">1<span class="kmap-mnum">m0</span></td><td class="cell-1 grp-a">1<span class="kmap-mnum">m1</span></td></tr>
+<tr><th>1</th><td class="cell-0">0<span class="kmap-mnum">m2</span></td><td class="cell-1 grp-b">1<span class="kmap-mnum">m3</span></td></tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>Top row (m0, m1): A = 0 stays constant &rarr; A&prime;</li>
+<li><span class="swatch grp-b"></span>Right column (m1, m3): B = 1 stays constant &rarr; B</li>
+</ul>
+<p class="kmap-result">F = A&prime; + B</p>
+</div>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">2. F(A,B) = &Sigma;(1, 2)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">A \ B</th><th>0</th><th>1</th></tr></thead>
+<tbody>
+<tr><th>0</th><td class="cell-0">0<span class="kmap-mnum">m0</span></td><td class="cell-1">1<span class="kmap-mnum">m1</span></td></tr>
+<tr><th>1</th><td class="cell-1">1<span class="kmap-mnum">m2</span></td><td class="cell-0">0<span class="kmap-mnum">m3</span></td></tr>
+</tbody>
+</table>
+</div>
+<p>The two 1s sit diagonally from each other &mdash; not adjacent &mdash; so neither can be grouped into a pair. Each stays a full two-variable term.</p>
+<p class="kmap-result">F = A&prime;B + AB&prime;</p>
+</div>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">3. F(A,B) = &Sigma;(0, 1, 2, 3)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">A \ B</th><th>0</th><th>1</th></tr></thead>
+<tbody>
+<tr><th>0</th><td class="cell-1 grp-a">1<span class="kmap-mnum">m0</span></td><td class="cell-1 grp-a">1<span class="kmap-mnum">m1</span></td></tr>
+<tr><th>1</th><td class="cell-1 grp-a">1<span class="kmap-mnum">m2</span></td><td class="cell-1 grp-a">1<span class="kmap-mnum">m3</span></td></tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>All four cells: one group of 4 &mdash; both variables drop out</li>
+</ul>
+<p class="kmap-result">F = 1</p>
+</div>
+</section>
+
+<section class="section" id="three-variable">
+<h2>Three-Variable K-Maps</h2>
+<p class="section-intro">8 cells (2&sup3;). Variable A forms the rows; B and C form the columns in Gray-code order.</p>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">4. F(A,B,C) = &Sigma;(0, 1, 2, 3, 5, 7)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">A \ BC</th><th>00</th><th>01</th><th>11</th><th>10</th></tr></thead>
+<tbody>
+<tr><th>0</th>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m0</span></td>
+<td class="cell-1 grp-a grp-b">1<span class="kmap-mnum">m1</span></td>
+<td class="cell-1 grp-a grp-b">1<span class="kmap-mnum">m3</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m2</span></td>
+</tr>
+<tr><th>1</th>
+<td class="cell-0">0<span class="kmap-mnum">m4</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m5</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m7</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m6</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>Whole top row (m0, m1, m3, m2): A = 0 constant &rarr; A&prime;</li>
+<li><span class="swatch grp-b"></span>Middle two columns, both rows (m1, m5, m7, m3): C = 1 constant &rarr; C</li>
+</ul>
+<p>Cells m1 and m3 belong to both groups &mdash; overlap is allowed and often unavoidable.</p>
+<p class="kmap-result">F = A&prime; + C</p>
+</div>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">5. F(A,B,C) = &Sigma;(1, 3, 5, 7)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">A \ BC</th><th>00</th><th>01</th><th>11</th><th>10</th></tr></thead>
+<tbody>
+<tr><th>0</th>
+<td class="cell-0">0<span class="kmap-mnum">m0</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m1</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m3</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m2</span></td>
+</tr>
+<tr><th>1</th>
+<td class="cell-0">0<span class="kmap-mnum">m4</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m5</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m7</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m6</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>Middle two columns, both rows: only C stays constant (C = 1)</li>
+</ul>
+<p class="kmap-result">F = C</p>
+</div>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">6. F(A,B,C) = &Sigma;(0, 2, 4, 5, 6)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">A \ BC</th><th>00</th><th>01</th><th>11</th><th>10</th></tr></thead>
+<tbody>
+<tr><th>0</th>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m0</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m1</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m3</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m2</span></td>
+</tr>
+<tr><th>1</th>
+<td class="cell-1 grp-a grp-b">1<span class="kmap-mnum">m4</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m5</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m7</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m6</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>Outer two columns (00 and 10), both rows &mdash; wraps around the map&rsquo;s edges: C = 0 constant &rarr; C&prime;</li>
+<li><span class="swatch grp-b"></span>m4 and m5 (row A = 1, columns 00 and 01): A = 1, B = 0 constant &rarr; AB&prime;</li>
+</ul>
+<p class="kmap-result">F = C&prime; + AB&prime;</p>
+</div>
+</section>
+
+<section class="section" id="four-variable">
+<h2>Four-Variable K-Maps</h2>
+<p class="section-intro">16 cells (2&#8308;). A and B form the rows, C and D form the columns, both in Gray-code order. This map wraps both left-right and top-bottom.</p>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">7. F(A,B,C,D) = &Sigma;(0, 1, 2, 3, 7, 11, 15)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">AB \ CD</th><th>00</th><th>01</th><th>11</th><th>10</th></tr></thead>
+<tbody>
+<tr><th>00</th>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m0</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m1</span></td>
+<td class="cell-1 grp-a grp-b">1<span class="kmap-mnum">m3</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m2</span></td>
+</tr>
+<tr><th>01</th>
+<td class="cell-0">0<span class="kmap-mnum">m4</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m5</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m7</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m6</span></td>
+</tr>
+<tr><th>11</th>
+<td class="cell-0">0<span class="kmap-mnum">m12</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m13</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m15</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m14</span></td>
+</tr>
+<tr><th>10</th>
+<td class="cell-0">0<span class="kmap-mnum">m8</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m9</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m11</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m10</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>Whole top row (m0, m1, m3, m2): A = 0, B = 0 constant &rarr; A&prime;B&prime;</li>
+<li><span class="swatch grp-b"></span>Whole CD = 11 column, all four rows: C = 1, D = 1 constant &rarr; CD</li>
+</ul>
+<p class="kmap-result">F = A&prime;B&prime; + CD</p>
+</div>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">8. F(A,B,C,D) = &Sigma;(0, 4, 8, 12, 13, 14, 15)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">AB \ CD</th><th>00</th><th>01</th><th>11</th><th>10</th></tr></thead>
+<tbody>
+<tr><th>00</th>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m0</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m1</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m3</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m2</span></td>
+</tr>
+<tr><th>01</th>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m4</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m5</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m7</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m6</span></td>
+</tr>
+<tr><th>11</th>
+<td class="cell-1 grp-a grp-b">1<span class="kmap-mnum">m12</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m13</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m15</span></td>
+<td class="cell-1 grp-b">1<span class="kmap-mnum">m14</span></td>
+</tr>
+<tr><th>10</th>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m8</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m9</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m11</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m10</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>Whole CD = 00 column, all four rows &mdash; wraps top-to-bottom: C = 0, D = 0 constant &rarr; C&prime;D&prime;</li>
+<li><span class="swatch grp-b"></span>Whole AB = 11 row: A = 1, B = 1 constant &rarr; AB</li>
+</ul>
+<p class="kmap-result">F = C&prime;D&prime; + AB</p>
+</div>
+
+<div class="card example-card">
+<div class="card-header">
+<span class="badge">Example</span>
+<span class="title">9. F(A,B,C,D) = &Sigma;(1, 3, 5, 7, 9) + d(11, 13, 15)</span>
+</div>
+<div class="kmap-wrap">
+<table class="kmap">
+<thead><tr><th class="kmap-corner">AB \ CD</th><th>00</th><th>01</th><th>11</th><th>10</th></tr></thead>
+<tbody>
+<tr><th>00</th>
+<td class="cell-0">0<span class="kmap-mnum">m0</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m1</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m3</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m2</span></td>
+</tr>
+<tr><th>01</th>
+<td class="cell-0">0<span class="kmap-mnum">m4</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m5</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m7</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m6</span></td>
+</tr>
+<tr><th>11</th>
+<td class="cell-0">0<span class="kmap-mnum">m12</span></td>
+<td class="cell-dc grp-a">X<span class="kmap-mnum">m13</span></td>
+<td class="cell-dc grp-a">X<span class="kmap-mnum">m15</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m14</span></td>
+</tr>
+<tr><th>10</th>
+<td class="cell-0">0<span class="kmap-mnum">m8</span></td>
+<td class="cell-1 grp-a">1<span class="kmap-mnum">m9</span></td>
+<td class="cell-dc grp-a">X<span class="kmap-mnum">m11</span></td>
+<td class="cell-0">0<span class="kmap-mnum">m10</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="group-legend">
+<li><span class="swatch grp-a"></span>Both CD = 01 and CD = 11 columns, all four rows, treating the X&rsquo;s as 1s: only D stays constant (D = 1)</li>
+</ul>
+<p>Without the don&rsquo;t cares, the same five 1s could only be grouped into smaller pairs. Letting the map fill in the X&rsquo;s at m11, m13, and m15 collapses the whole function to a single variable.</p>
+<p class="kmap-result">F = D</p>
+</div>
+</section>
+
+<section class="section" id="self-check">
+<h2>Self-Check</h2>
+<div class="quiz">
+<span class="quiz-title">Quick check</span>
+<fieldset>
+<div class="quiz-item">
+<label for="q1">How many bits differ between any two horizontally or vertically adjacent K-map cells?</label>
+<input data-answer="1|one" id="q1" type="text">
+</div>
+<div class="quiz-item">
+<label for="q2">A group of 8 adjacent 1s eliminates how many variables?</label>
+<input data-answer="3|three" id="q2" type="text">
+</div>
+<div class="quiz-item">
+<label for="q3">Is it legal to circle a group of 3 cells together? (yes/no)</label>
+<input data-answer="no|n" id="q3" type="text">
+</div>
+<div class="quiz-item">
+<label for="q4">Can the same 1 belong to more than one group? (yes/no)</label>
+<input data-answer="yes|y" id="q4" type="text">
+</div>
+<div class="quiz-item">
+<label for="q5">For F(A,B) = &Sigma;(0, 1, 2, 3), what is the fully simplified expression?</label>
+<input data-answer="1" id="q5" type="text">
+</div>
+</fieldset>
+<button class="check-steps-btn" type="button">Check Answers</button>
+<button class="hide-steps-btn" type="button">Reset</button>
+<div class="feedback"></div>
+</div>
+</section>
+
+<nav class="pager" aria-label="Lesson navigation">
+<a class="pager-prev" href="../05-boolean-algebra/index.html"><span class="pager-label">Previous lesson</span><span class="pager-title">Boolean Algebra</span></a>
+</nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

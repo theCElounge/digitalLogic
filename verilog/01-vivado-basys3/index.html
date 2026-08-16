@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started: Vivado & the Basys 3 · Verilog Tutorials · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Create your first Vivado project, assign pins with a constraints file, and light up real LEDs on the Basys 3 board — the complete flow, start to finish.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="../../assets/js/verilog-lessons.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Verilog 001 / 110</span><span class="sr-only">Verilog tutorial 1 of 6</span></p>
+        <h1>Getting Started: Vivado &amp; the <span class="accent">Basys 3</span></h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Create your first Vivado project, assign pins with a constraints file, and light up real LEDs on the Basys 3 board — the complete flow, start to finish.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section">
+    <h2>The big picture</h2>
+    <p>An FPGA is a chip full of uncommitted logic — thousands of tiny look-up tables (each one literally a truth table), flip-flops, and programmable wiring. Verilog describes the circuit you want; <strong>Vivado</strong> turns that description into a configuration file (a <em>bitstream</em>) and loads it onto the <strong>Basys 3</strong> board. Every design in this course follows the same five-stage flow:</p>
+    <div class="instructions"><ul>
+        <li><strong>Design</strong> — write Verilog source files (<code>.v</code>).</li>
+        <li><strong>Simulate</strong> — verify behavior in software before touching hardware (Tutorial 4).</li>
+        <li><strong>Synthesize</strong> — Vivado converts Verilog into a netlist of FPGA primitives.</li>
+        <li><strong>Implement</strong> — place the netlist onto the chip and route the wires; pin locations come from your constraints (<code>.xdc</code>) file.</li>
+        <li><strong>Program</strong> — generate the bitstream and send it to the board over USB.</li>
+    </ul></div>
+</section>
+
+<section class="section">
+    <h2>Create the project</h2>
+    <ol class="steps">
+        <li>Open Vivado and choose <span class="ui-path">Create Project</span>. Name it <code>lab1_hello</code>, pick a folder <strong>with no spaces in the path</strong>, and keep "Create project subdirectory" checked.</li>
+        <li>Select <span class="ui-path">RTL Project</span> and check <em>Do not specify sources at this time</em>.</li>
+        <li>On the part-selection screen, click the <span class="ui-path">Boards</span> tab and choose <strong>Basys 3</strong>. If it isn't listed, click <span class="ui-path">Refresh</span> / <span class="ui-path">Install/Update Boards</span>, or select the part directly: <code>xc7a35tcpg236-1</code>.</li>
+        <li>Finish. You land in the Flow Navigator (left panel) — it lists the five stages in order, top to bottom.</li>
+        <li>Add a source: <span class="ui-path">Sources panel → + → Add or create design sources → Create File</span>, name it <code>top</code>. Skip the port wizard (click OK, then Yes) — we'll type the ports ourselves.</li>
+    </ol>
+</section>
+
+<section class="section">
+    <h2>Your first module</h2>
+    <p>This design wires four slide switches straight to four LEDs — no logic yet, just a connection. It proves the whole toolchain works.</p>
+    <div class="code-block"><span class="code-caption">top.v</span><pre><code class="language-verilog">// Four switches drive four LEDs.
+module top(
+    input  wire [3:0] sw,    // slide switches SW3..SW0
+    output wire [3:0] led    // LEDs LD3..LD0
+);
+    assign led = sw;         // continuous connection
+endmodule</code></pre></div>
+    <p>Don't worry about the syntax details yet — Tutorial 2 explains every line. The key idea: <code>assign</code> creates a permanent wire between the two, like soldering.</p>
+</section>
+
+<section class="section">
+    <h2>Pin assignments: the XDC file</h2>
+    <p>Verilog says <em>what</em> the circuit does; the constraints file says <em>where</em> its ports connect on the physical chip. Digilent publishes a master XDC for the Basys 3 with every pin pre-written and commented out — you uncomment the lines you use and make the port names match your module.</p>
+    <ol class="steps">
+        <li>Download <code>Basys-3-Master.xdc</code> from Digilent's website (search "Basys 3 master XDC").</li>
+        <li><span class="ui-path">Sources → + → Add or create constraints → Add Files</span>, select the XDC.</li>
+        <li>Uncomment the four <code>sw</code> lines and four <code>led</code> lines. Port names in the XDC must match your Verilog port names <strong>exactly</strong> (they already do if you used <code>sw</code> and <code>led</code>).</li>
+    </ol>
+    <div class="code-block"><span class="code-caption">Basys-3-Master.xdc (excerpt — sw[0] and led[0])</span><pre><code class="language-xdc">## Switches
+set_property PACKAGE_PIN V17 [get_ports {sw[0]}]
+    set_property IOSTANDARD LVCMOS33 [get_ports {sw[0]}]
+
+## LEDs
+set_property PACKAGE_PIN U16 [get_ports {led[0]}]
+    set_property IOSTANDARD LVCMOS33 [get_ports {led[0]}]</code></pre></div>
+    <p><code>PACKAGE_PIN</code> names the physical ball on the chip (switch SW0 is wired to pin V17 on the board); <code>IOSTANDARD LVCMOS33</code> sets the voltage standard (3.3&nbsp;V) — every Basys 3 I/O in this course uses it.</p>
+    <div class="callout-warning"><strong>Most common Lab 1 error:</strong> a port name mismatch between the XDC and the module (<code>LED</code> vs <code>led</code>, or uncommenting <code>sw[15:4]</code> lines you don't use). Implementation fails with "unconstrained logical port" or "port not found." Names are case-sensitive.</div>
+</section>
+
+<section class="section">
+    <h2>Build and program</h2>
+    <ol class="steps">
+        <li>Click <span class="ui-path">Generate Bitstream</span> in the Flow Navigator — Vivado runs synthesis and implementation automatically first. First runs take a few minutes.</li>
+        <li>Connect the Basys 3 by USB, power switch ON (the mode jumper JP1 should be on <strong>JTAG</strong>).</li>
+        <li><span class="ui-path">Open Hardware Manager → Open Target → Auto Connect</span>.</li>
+        <li><span class="ui-path">Program Device</span> → select the generated <code>.bit</code> file → Program.</li>
+        <li>Flip switches SW0–SW3. The LEDs above them should follow. 🎉</li>
+    </ol>
+</section>
+
+<section class="section">
+    <h2>Check yourself</h2>
+    <fieldset class="quiz"><legend>Self-check</legend><div class="quiz-item"><label for="self-check-q1">Which file type tells Vivado which physical pin each port uses? (three-letter extension)</label><input type="text" id="self-check-q1" data-answer="xdc|.xdc" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q2">Verilog port names and XDC port names must match exactly. True or false?</label><input type="text" id="self-check-q2" data-answer="true|t" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q3">What is the configuration file loaded onto the FPGA called? (one word)</label><input type="text" id="self-check-q3" data-answer="bitstream|a bitstream|the bitstream" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q4">Which stage converts your Verilog into a netlist of FPGA primitives?</label><input type="text" id="self-check-q4" data-answer="synthesis|synthesize|synthesis stage" autocomplete="off" autocapitalize="off" spellcheck="false"></div><button type="button" class="check-steps-btn">Check answers</button><button type="button" class="hide-steps-btn">Reset</button><span class="feedback"></span></fieldset>
+</section>
+
+<nav class="pager" aria-label="Tutorial navigation"><a class="pager-next" href="../02-modules-and-dataflow/index.html"><span class="pager-label">Next tutorial</span><span class="pager-title">Modules, Wires &amp; Dataflow Modeling</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

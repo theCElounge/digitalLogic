@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truth Tables · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Build and verify truth tables for compound Boolean expressions, with instant feedback on every row.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="truth_tables.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Lesson 100 / 101</span><span class="sr-only">Lesson 4 of 5</span></p>
+        <h1>Truth <span class="accent">Tables</span></h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Build and verify truth tables for compound Boolean expressions, with instant feedback on every row.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section" id="intro">
+<h2>Overview</h2>
+<div class="instructions">
+<ul>
+<li>Click <b>Show Steps</b> to reveal the truth table for each problem.</li>
+<li>Fill in the output column(s) for each input combination.</li>
+<li>Click <b>Check Answers</b> to get instant feedback. Correct answers are highlighted in green, mistakes in red.</li>
+<li>Click <b>Hide Steps</b> to collapse the table and clear your work for that problem.</li>
+<li>Tables with many columns/rows can be scrolled horizontally on small screens.</li>
+</ul>
+</div>
+<div aria-label="Majority Vote Explorer" class="simulator" role="region">
+<h3 aria-hidden="true">Try It Out: Majority Voter</h3>
+<div class="sim-container">
+<div aria-label="Voters" class="sim-inputs" role="group">
+<button aria-pressed="false" class="sim-btn" id="maj-in-a" onclick="toggleMajority('a')" type="button">Voter A: 0</button>
+<button aria-pressed="false" class="sim-btn" id="maj-in-b" onclick="toggleMajority('b')" type="button">Voter B: 0</button>
+<button aria-pressed="false" class="sim-btn" id="maj-in-c" onclick="toggleMajority('c')" type="button">Voter C: 0</button>
+</div>
+<div aria-hidden="true" class="sim-flow-arrow">→</div>
+<div aria-atomic="true" aria-live="polite" class="sim-output" id="maj-out">Result: 0 (No Majority)</div>
+</div>
+</div>
+</section>
+<section class="section" id="tt1">
+<h2>1. Click show Truth Table and complete the truth table below</h2>
+<p><b>Inputs:</b> a, b   <b>Output:</b> c<br/>c = 1 when any of the inputs = 1</p>
+<button onclick="showTruthTable('tt1', ['a','b'], ['c'], [[0,0,0],[0,1,1],[1,0,1],[1,1,1]])">Show Truth Table</button>
+<button class="hide-steps-btn" onclick="hideTruthTable('tt1')" style="display:none;">Hide Truth Table</button>
+<form class="tt-form" style="display:none;"></form>
+<button class="check-tt-btn" onclick="checkTruthTable(event, 'tt1', ['a','b'], ['c'], [[0,0,0],[0,1,1],[1,0,1],[1,1,1]])" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback"></div>
+</section>
+<section class="section" id="tt2">
+<h2>2. Click show Truth Table and complete the truth table below</h2>
+<p><b>Inputs:</b> a, b, c   <b>Output:</b> d<br/>d = 1 when at least two inputs = 1</p>
+<button onclick="showTruthTable('tt2', ['a','b','c'], ['d'], [[0,0,0,0],[0,0,1,0],[0,1,0,0],[0,1,1,1],[1,0,0,0],[1,0,1,1],[1,1,0,1],[1,1,1,1]])">Show Truth Table</button>
+<button class="hide-steps-btn" onclick="hideTruthTable('tt2')" style="display:none;">Hide Truth Table</button>
+<form class="tt-form" style="display:none;"></form>
+<button class="check-tt-btn" onclick="checkTruthTable(event, 'tt2', ['a','b','c'], ['d'], [[0,0,0,0],[0,0,1,0],[0,1,0,0],[0,1,1,1],[1,0,0,0],[1,0,1,1],[1,1,0,1],[1,1,1,1]])" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback"></div>
+</section>
+<section class="section" id="tt3">
+<h2>3. Click show Truth Table and complete the truth table below</h2>
+<p><b>Inputs:</b> x, y, z   <b>Output:</b> c<br/>c = 1 when only two inputs = 1</p>
+<button onclick="showTruthTable('tt3', ['x','y','z'], ['c'], [[0,0,0,0],[0,0,1,0],[0,1,0,0],[0,1,1,1],[1,0,0,0],[1,0,1,1],[1,1,0,1],[1,1,1,0]])">Show Truth Table</button>
+<button class="hide-steps-btn" onclick="hideTruthTable('tt3')" style="display:none;">Hide Truth Table</button>
+<form class="tt-form" style="display:none;"></form>
+<button class="check-tt-btn" onclick="checkTruthTable(event, 'tt3', ['x','y','z'], ['c'], [[0,0,0,0],[0,0,1,0],[0,1,0,0],[0,1,1,1],[1,0,0,0],[1,0,1,1],[1,1,0,1],[1,1,1,0]])" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback"></div>
+</section>
+<section class="section" id="tt4">
+<h2>4. Click show Truth Table and complete the truth table below</h2>
+<p><b>Inputs:</b> a, b, c, d   <b>Output:</b> y<br/>
+                a, b represent a number (0–2, 3 not used); c, d represent a second number (0–2, 3 not used).<br/>
+                y = 1 if and only if the two numbers do not differ by more than 1.</p>
+<button onclick="showTruthTable('tt4', ['a','b','c','d'], ['y'], [
+                    [0,0,0,0,1],[0,0,0,1,1],[0,0,1,0,1],[0,0,1,1,0],
+                    [0,1,0,0,1],[0,1,0,1,1],[0,1,1,0,1],[0,1,1,1,1],
+                    [1,0,0,0,1],[1,0,0,1,1],[1,0,1,0,1],[1,0,1,1,1],
+                    [1,1,0,0,0],[1,1,0,1,1],[1,1,1,0,1],[1,1,1,1,1]
+                ])">Show Truth Table</button>
+<button class="hide-steps-btn" onclick="hideTruthTable('tt4')" style="display:none;">Hide Truth Table</button>
+<form class="tt-form" style="display:none;"></form>
+<button class="check-tt-btn" onclick="checkTruthTable(event, 'tt4', ['a','b','c','d'], ['y'], [
+                    [0,0,0,0,1],[0,0,0,1,1],[0,0,1,0,1],[0,0,1,1,0],
+                    [0,1,0,0,1],[0,1,0,1,1],[0,1,1,0,1],[0,1,1,1,1],
+                    [1,0,0,0,1],[1,0,0,1,1],[1,0,1,0,1],[1,0,1,1,1],
+                    [1,1,0,0,0],[1,1,0,1,1],[1,1,1,0,1],[1,1,1,1,1]
+                ])" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback"></div>
+</section>
+<section class="section" id="tt5">
+<h2>5. Click show Truth Table and complete the truth table below</h2>
+<p><b>Inputs:</b> a, b, c, d   <b>Output:</b> y<br/>
+                a, b represent a number (0–2, 3 not used); c, d represent a second number (0–2, 3 not used).<br/>
+                y = 1 if and only if the sum of the two numbers is odd.</p>
+<button onclick="showTruthTable('tt5', ['a','b','c','d'], ['y'], [
+                    [0,0,0,0,0],[0,0,0,1,1],[0,0,1,0,1],[0,0,1,1,0],
+                    [0,1,0,0,1],[0,1,0,1,0],[0,1,1,0,0],[0,1,1,1,1],
+                    [1,0,0,0,1],[1,0,0,1,0],[1,0,1,0,0],[1,0,1,1,1],
+                    [1,1,0,0,0],[1,1,0,1,1],[1,1,1,0,1],[1,1,1,1,0]
+                ])">Show Truth Table</button>
+<button class="hide-steps-btn" onclick="hideTruthTable('tt5')" style="display:none;">Hide Truth Table</button>
+<form class="tt-form" style="display:none;"></form>
+<button class="check-tt-btn" onclick="checkTruthTable(event, 'tt5', ['a','b','c','d'], ['y'], [
+                    [0,0,0,0,0],[0,0,0,1,1],[0,0,1,0,1],[0,0,1,1,0],
+                    [0,1,0,0,1],[0,1,0,1,0],[0,1,1,0,0],[0,1,1,1,1],
+                    [1,0,0,0,1],[1,0,0,1,0],[1,0,1,0,0],[1,0,1,1,1],
+                    [1,1,0,0,0],[1,1,0,1,1],[1,1,1,0,1],[1,1,1,1,0]
+                ])" style="display:none; margin-top:1rem;">Check Answers</button>
+<div class="feedback"></div>
+</section>
+
+<nav class="pager" aria-label="Lesson navigation"><a class="pager-prev" href="../03-logic-gates/index.html"><span class="pager-label">Previous lesson</span><span class="pager-title">Logic Gates</span></a><a class="pager-next" href="../05-boolean-algebra/index.html"><span class="pager-label">Next lesson</span><span class="pager-title">Boolean Algebra</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finite State Machines in Verilog · Verilog Tutorials · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Turn a state diagram into working hardware with the three-block FSM pattern — built around a complete "1011" sequence detector, the blueprint for Lab 10 and your project.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="../../assets/js/verilog-lessons.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Verilog 110 / 110</span><span class="sr-only">Verilog tutorial 6 of 6</span></p>
+        <h1>Finite <span class="accent">State Machines</span> in Verilog</h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Turn a state diagram into working hardware with the three-block FSM pattern — built around a complete "1011" sequence detector, the blueprint for Lab 10 and your project.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section">
+    <h2>From diagram to code</h2>
+    <p>Every clocked sequential circuit you analyzed in lecture — state table, state diagram, next-state equations — maps onto one reusable Verilog pattern with three parts:</p>
+    <div class="instructions"><ul>
+        <li><strong>State register</strong> (clocked, <code>&lt;=</code>): holds the current state, handles reset.</li>
+        <li><strong>Next-state logic</strong> (combinational, <code>=</code>): a <code>case</code> on the current state — this <em>is</em> your state table, row by row.</li>
+        <li><strong>Output logic</strong> (combinational): Moore = depends on state only; Mealy = state <em>and</em> inputs.</li>
+    </ul></div>
+    <p>Name your states with <code>localparam</code> so the code reads like the diagram, not like binary soup.</p>
+</section>
+
+<section class="section">
+    <h2>Complete example: "1011" sequence detector (Moore)</h2>
+    <p>Spec: watching a serial input <code>din</code> one bit per clock, raise <code>found</code> for one cycle when the pattern <code>1011</code> has just been seen (overlapping allowed). Five states — one per amount of progress:</p>
+    <div class="code-block"><span class="code-caption">seq1011.v — the Lab 10 blueprint</span><pre><code class="language-verilog">module seq1011(
+    input  wire clk, rst,
+    input  wire din,
+    output wire found
+);
+    // State encoding: progress through &quot;1011&quot;
+    localparam S0   = 3&#x27;d0;  // nothing matched yet
+    localparam S1   = 3&#x27;d1;  // seen 1
+    localparam S10  = 3&#x27;d2;  // seen 10
+    localparam S101 = 3&#x27;d3;  // seen 101
+    localparam HIT  = 3&#x27;d4;  // seen 1011  -&gt; output!
+
+    reg [2:0] state, next;
+
+    // 1) State register  (sequential, non-blocking)
+    always @(posedge clk or posedge rst) begin
+        if (rst) state &lt;= S0;
+        else     state &lt;= next;
+    end
+
+    // 2) Next-state logic  (combinational, blocking)
+    //    Each case row is one row of the state table.
+    always @(*) begin
+        next = state;                       // safe default: stay put
+        case (state)
+            S0:   next = din ? S1   : S0;
+            S1:   next = din ? S1   : S10;
+            S10:  next = din ? S101 : S0;
+            S101: next = din ? HIT  : S10;
+            HIT:  next = din ? S1   : S10;  // overlap: &quot;1011&quot; ends in 1
+            default: next = S0;
+        endcase
+    end
+
+    // 3) Output logic (Moore: depends on state only)
+    assign found = (state == HIT);
+endmodule</code></pre></div>
+    <div class="instructions"><ul>
+        <li>The default assignment <code>next = state;</code> at the top plus <code>default:</code> in the case means <strong>no accidental latches</strong>, ever — the Tutorial 3 rule at work.</li>
+        <li>The overlap transitions out of <code>HIT</code> come straight from asking: "after 1011, what prefix of the pattern do the last bits already form?" This is exactly the reasoning from your week 11–12 lectures.</li>
+        <li>Mealy version: make <code>found</code> depend on <code>state</code> <em>and</em> <code>din</code> (e.g. <code>assign found = (state == S101) &amp;&amp; din;</code>) — one fewer state, output one cycle earlier.</li>
+    </ul></div>
+</section>
+
+<section class="section">
+    <h2>Testbench with a clock</h2>
+    <div class="code-block"><span class="code-caption">seq1011_tb.v — feeding the detector a bitstream</span><pre><code class="language-verilog">`timescale 1ns / 1ps
+module seq1011_tb;
+    reg  clk = 0, rst, din;
+    wire found;
+
+    seq1011 dut (.clk(clk), .rst(rst), .din(din), .found(found));
+
+    always #5 clk = ~clk;        // 100 MHz clock: toggle every 5 ns
+
+    // Drive one bit per clock, changing din just after each edge
+    task send(input b);
+        begin din = b; @(posedge clk); #1; end
+    endtask
+
+    initial begin
+        rst = 1; din = 0; @(posedge clk); #1; rst = 0;
+        // stream: 1 0 1 1 0 1 1  -&gt; hits after bit 4 and (overlap) bit 7
+        send(1); send(0); send(1); send(1);
+        send(0); send(1); send(1);
+        #20 $finish;
+    end
+endmodule</code></pre></div>
+    <p>In the waveform, confirm <code>found</code> pulses exactly twice. This clock-generator idiom (<code>always #5 clk = ~clk;</code>) is the template for every sequential testbench you'll write, including the project.</p>
+</section>
+
+<section class="section">
+    <h2>On the board: buttons need conditioning</h2>
+    <p>To demo the detector with a pushbutton as <code>din</code> and another as the "clock," you'd suffer from bounce and from holding buttons across many real clock cycles. The Lab 10 handout provides a <em>debounce + single-pulse</em> module; the FSM itself stays clocked at 100&nbsp;MHz and treats the conditioned button as a one-cycle <code>din_valid</code> enable. Design rule: <strong>never clock an FSM from a button</strong> — condition the button into an enable instead.</p>
+</section>
+
+<section class="section">
+    <h2>Check yourself</h2>
+    <fieldset class="quiz"><legend>Self-check</legend><div class="quiz-item"><label for="self-check-q1">In a Moore machine, outputs depend on state only, or state and inputs?</label><input type="text" id="self-check-q1" data-answer="state only|state|only state|the state only" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q2">Which keyword gives states readable names?</label><input type="text" id="self-check-q2" data-answer="localparam|parameter|localparam or parameter" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q3">In the three-block pattern, the state register uses which assignment operator?</label><input type="text" id="self-check-q3" data-answer="&lt;=" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q4">How many one-cycle pulses does found produce for the input stream 1011011?</label><input type="text" id="self-check-q4" data-answer="2|two" autocomplete="off" autocapitalize="off" spellcheck="false"></div><button type="button" class="check-steps-btn">Check answers</button><button type="button" class="hide-steps-btn">Reset</button><span class="feedback"></span></fieldset>
+</section>
+
+<nav class="pager" aria-label="Tutorial navigation"><a class="pager-prev" href="../05-sequential-logic/index.html"><span class="pager-label">Previous tutorial</span><span class="pager-title">Sequential Verilog: Clocks, Registers &amp; Counters</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation & Testbenches · Verilog Tutorials · Digital Logic and Computer Organization</title>
+    <meta name="description" content="Verify your circuit in software before it ever touches the board: write a testbench, run the Vivado simulator, and read waveforms like a pro.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="../../assets/images/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script src="../../assets/js/site.js" defer></script>
+    <script src="../../assets/js/verilog-lessons.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="../../index.html">
+                <img class="brand-mark" src="../../assets/images/logo-mark-64.png" alt="" width="36" height="36">
+                <span>Digital Logic<span class="brand-course">The CE Lounge · Lesson Materials</span></span>
+            </a>
+            <nav class="site-nav" aria-label="Course">
+                <ul>
+                    <li><a href="../../index.html">All lessons</a></li>
+                    <li><a href="../../verilog/index.html">Verilog tutorials</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark theme">🌙<span class="theme-label">Dark</span></button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <p class="eyebrow"><span aria-hidden="true">Verilog 100 / 110</span><span class="sr-only">Verilog tutorial 4 of 6</span></p>
+        <h1>Simulation &amp; <span class="accent">Testbenches</span></h1>
+        <hr class="trace-rule" aria-hidden="true">
+        <p class="lede">Verify your circuit in software before it ever touches the board: write a testbench, run the Vivado simulator, and read waveforms like a pro.</p>
+    </div>
+
+    <div class="page-grid">
+        <main id="main-content" class="content">
+
+<section class="section">
+    <h2>Why simulate first</h2>
+    <p>Programming the board takes minutes; a simulation runs in seconds and shows you <em>every internal signal</em>, not just the LEDs. From Lab 4 onward the rule is: <strong>never program a design you haven't simulated.</strong> A testbench is a Verilog module with no ports that (1) instantiates your design — the <em>DUT</em>, device under test — (2) wiggles its inputs, and (3) checks or displays the outputs.</p>
+</section>
+
+<section class="section">
+    <h2>A complete testbench</h2>
+    <div class="code-block"><span class="code-caption">full_adder_tb.v — exhaustive test of the Tutorial 2 full adder</span><pre><code class="language-verilog">`timescale 1ns / 1ps      // time unit / precision for delays
+
+module full_adder_tb;      // no ports!
+
+    // 1. Signals: reg for DUT inputs (we drive them), wire for outputs
+    reg  a, b, cin;
+    wire s, cout;
+
+    // 2. Instantiate the device under test
+    full_adder dut (.a(a), .b(b), .cin(cin), .s(s), .cout(cout));
+
+    // 3. Drive every input combination
+    integer i;
+    initial begin
+        for (i = 0; i &lt; 8; i = i + 1) begin
+            {a, b, cin} = i[2:0];   // unpack loop counter onto inputs
+            #10;                     // wait 10 ns for outputs to settle
+            $display(&quot;a=%b b=%b cin=%b  -&gt;  cout,s = %b%b&quot;,
+                      a, b, cin, cout, s);
+        end
+        $finish;                     // end the simulation
+    end
+endmodule</code></pre></div>
+    <div class="instructions"><ul>
+        <li><code>initial</code> blocks run once, starting at time 0 — they exist <strong>only for simulation</strong>; you can't synthesize them onto the board.</li>
+        <li><code>#10</code> means "wait 10 time units" (nanoseconds here, set by <code>`timescale</code>).</li>
+        <li><code>$display</code> prints to the simulator console; <code>%b</code> formats in binary. <code>$monitor</code> is similar but prints automatically whenever a listed signal changes.</li>
+        <li>An 8-row loop fully tests a 3-input circuit. Exhaustive testing is feasible up to ~10 inputs; beyond that you test representative and corner cases.</li>
+    </ul></div>
+</section>
+
+<section class="section">
+    <h2>Running it in Vivado</h2>
+    <ol class="steps">
+        <li>Add the testbench as a <strong>simulation source</strong>: <span class="ui-path">Sources → + → Add or create simulation sources</span>. It appears under <em>Simulation Sources</em>, not Design Sources — testbenches never go to the board.</li>
+        <li>Check that the testbench is bold (set as top). If not: right-click → <span class="ui-path">Set as Top</span>.</li>
+        <li>Flow Navigator → <span class="ui-path">Run Simulation → Run Behavioral Simulation</span>.</li>
+        <li>The waveform window opens. Click <span class="ui-path">Zoom Fit</span> (or press <span class="kbd">Ctrl</span>+<span class="kbd">F</span> …the magnifier icon) to see the whole run. Your <code>$display</code> output is in the <em>Tcl Console</em> below.</li>
+        <li>To watch internal signals (like the carries inside the adder): expand <code>dut</code> in the Scope panel, drag signals into the wave window, then restart the run (<span class="ui-path">Run → Restart</span>, then <span class="ui-path">Run All</span>).</li>
+    </ol>
+    <div class="callout-warning"><strong>If simulation "hangs":</strong> a testbench with a <code>forever</code> clock (Tutorial 5) never stops on its own. Use <span class="ui-path">Run For 1000 ns</span> instead of Run All, or make sure your stimulus ends with <code>$finish</code>.</div>
+</section>
+
+<section class="section">
+    <h2>Reading a waveform</h2>
+    <p>Three habits that make waveform debugging fast:</p>
+    <div class="instructions"><ul>
+        <li><strong>Verify against the truth table.</strong> At each 10&nbsp;ns step, read inputs → predicted output → actual output. For the full adder, at <code>a=1, b=1, cin=1</code> you must see <code>cout=1, s=1</code>.</li>
+        <li><strong>Group buses and set the radix.</strong> Right-click a multi-bit signal → <span class="ui-path">Radix → Unsigned Decimal</span> (or Hexadecimal) to read values like a human.</li>
+        <li><strong>Red means trouble.</strong> A red <code>X</code> is an unknown/uninitialized value; a <code>Z</code> is a floating (unconnected) wire — usually a port you forgot to hook up in the instantiation.</li>
+    </ul></div>
+</section>
+
+<section class="section">
+    <h2>Check yourself</h2>
+    <fieldset class="quiz"><legend>Self-check</legend><div class="quiz-item"><label for="self-check-q1">DUT inputs are declared reg in a testbench. What are DUT outputs declared as?</label><input type="text" id="self-check-q1" data-answer="wire|wires" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q2">Which system task ends a simulation? (starts with $)</label><input type="text" id="self-check-q2" data-answer="$finish|$finish;|finish" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q3">What does #10 do in a testbench?</label><input type="text" id="self-check-q3" data-answer="wait 10 ns|waits 10 ns|delay 10 ns|delays 10 ns|wait 10 time units|delay of 10 ns|wait for 10 ns|waits for 10 ns|delay 10 time units" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="quiz-item"><label for="self-check-q4">In a waveform, what does a red X on a signal mean? (one word)</label><input type="text" id="self-check-q4" data-answer="unknown|uninitialized|unknown value" autocomplete="off" autocapitalize="off" spellcheck="false"></div><button type="button" class="check-steps-btn">Check answers</button><button type="button" class="hide-steps-btn">Reset</button><span class="feedback"></span></fieldset>
+</section>
+
+<nav class="pager" aria-label="Tutorial navigation"><a class="pager-prev" href="../03-behavioral-modeling/index.html"><span class="pager-label">Previous tutorial</span><span class="pager-title">Behavioral Modeling: always, if &amp; case</span></a><a class="pager-next" href="../05-sequential-logic/index.html"><span class="pager-label">Next tutorial</span><span class="pager-title">Sequential Verilog: Clocks, Registers &amp; Counters</span></a></nav>
+        </main>
+        <aside class="toc" data-toc></aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Digital Logic and Computer Organization · The CE Lounge · Spring 2026</p>
+            <p class="bits" aria-hidden="true">0 1 1 0 · 1 0 0 1</p>
+        </div>
+    </footer>
+</body>
+</html>
